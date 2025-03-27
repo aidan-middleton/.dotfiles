@@ -1,0 +1,12 @@
+#
+# This containts notes describing the configuration of this system.
+#
+# author: Aidan Middleton
+# date: Wednesday, February 5, 2025
+#
+
+#
+# Hyprland
+#
+
+To start Hyprland, use ~/.local/bin/wrapperhl

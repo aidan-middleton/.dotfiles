@@ -1,0 +1,63 @@
+(defwidget bar []
+  (box :orientation "h"
+    (workspaces)
+    (sidestuff)))
+
+(defwidget sidestuff []
+  (box :class "sidestuff" :orientation "h" :space-evenly false :halign "end"
+    (metric :label "VOL"
+            :value volume
+            :onchange "pactl set-sink-volume @DEFAULT_SINK@ {}%")
+    (metric :label "MEM"
+            :value {EWW_RAM.used_mem_perc}
+            :onchange "")
+    (metric :label "DSK"
+            :value {round((1 - (EWW_DISK["/"].free / EWW_DISK["/"].total)) * 100, 0)}
+            :onchange "")
+    (metric :label "CPU"
+            :value { EWW_CPU.avg }
+            :onchange "")
+    time))
+
+(defwidget workspace [id monitor active] (button :class {"workspace" + active + monitor}
+                                           :onclick { "hyprctl dispatch workspace " + id} id))
+
+(deflisten workspaces :initial "[]" "scripts/get-workspaces")
+
+(defwidget workspaces []
+  (box :class "workspaces"
+       :orientation "h"
+       :space-evenly true
+       :halign "start"
+       :spacing 10
+    (for workspace in workspaces
+      (workspace :id {workspace.id} :monitor {workspace.monitor} :active {workspace.active}))))
+
+
+(defwidget metric [label value onchange]
+  (box :class "metric"
+       :orientation "h"
+       :space-evenly false
+    (box :class "label" label)
+    (scale :min 0
+           :max 101
+           :active {onchange != ""}
+           :value {value == '' ? 0 : value}
+           :onchange onchange)))
+
+(defpoll volume :interval "1s" "scripts/get-volume")
+
+(defpoll time :interval "1s" "date '+%r %b %d, %Y'")
+
+(defwindow bar :monitor 0
+               :windowtype "dock"
+               :geometry (geometry 
+               :x "0%"
+               :y "0%"
+               :width "100%"
+               :height "8px"
+               :anchor "top center")
+               :reserve (struts :side "top" :distance "4%")
+               :stacking "fg"
+               :exclusive "true"   
+  (bar))

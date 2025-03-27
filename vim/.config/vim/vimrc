@@ -1,0 +1,16 @@
+unlet! skip_defaults_vim
+source $VIMRUNTIME/defaults.vim
+
+set number
+
+set mouse-=a
+
+set expandtab
+set shiftwidth=4 smarttab
+
+call plug#begin('~/.vim/plugged')
+
+Plug 'elkowar/yuck.vim'
+
+call plug#end()
+

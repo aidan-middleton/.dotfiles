@@ -1,0 +1,147 @@
+* {
+  all: unset; // Unsets everything so you can style everything from scratch
+  font-family: "NotoSansMono", monospace; 
+  font-size: 12px;
+}
+
+// Global Styles
+.bar {
+  background-color: #000000;
+  color: #FFFFFF;
+  padding: 2px;
+}
+
+// Styles on classes (see eww.yuck for more information)
+
+.sidestuff slider {
+  all: unset;
+  color: #ffd5cd;
+}
+
+.metric scale trough highlight {
+  all: unset;
+  background-color: #FFFFFF;
+  color: #000000;
+  border-radius: 10px;
+}
+
+.metric scale trough {
+  all: unset;
+  background-color: #222222;
+  border-radius: 50px;
+  min-height: 3px;
+  min-width: 50px;
+  margin-left: 10px;
+  margin-right: 20px;
+}
+
+.workspaceactive0 {
+  color: #ff0000;
+}
+
+.workspaceinactive0 {
+  color: #800000;
+}
+
+.workspaceactive1 {
+  color: #00ff00;
+}
+
+.workspaceinactive1 {
+  color: #008000;
+}
+
+.workspaceactive2 {
+  color: #00ff00;
+}
+
+.workspaceinactive2 {
+  color: #008000;
+}
+
+.workspaceactive3 {
+  color: #ffff00;
+}
+
+.workspaceinactive3 {
+  color: #808000;
+}
+
+.workspaceactive4 {
+  color: #0000ff;
+}
+
+.workspaceinactive4 {
+  color: #000080;
+}
+
+.workspaceactive5 {
+  color: #ff00ff;
+}
+
+.workspaceinactive5 {
+  color: #800080;
+}
+
+.workspaceactive6 {
+  color: #00ffff;
+}
+
+.workspaceinactive6 {
+  color: #008080;
+}
+
+//
+// Gross widgets
+//
+
+// POWERMENU
+.bigpowermenu {
+  font-size: 3rem;
+}
+
+.quicksettings {
+  font-size: 1.75rem;
+}
+
+// WIDGET MISC SETTINGS
+
+.quote-text {
+  padding: 5px;
+  font-size: 1rem;
+  font-style: italic;
+  font-weight: 600;
+  color: #BF616A;
+}
+
+.appbar{
+  font-size: 2rem;
+}
+
+.cal {
+  color: #8fbcbb;
+  padding: 5px;
+  padding-bottom: 1px;
+}
+
+.favs {
+  color: #ECEFF4;
+  font-size: 2rem;
+}
+
+.small-date {
+  font-weight: 700;
+}
+
+// Search App CSS
+.searchapps-bar {
+  color: #88c0d0;
+  font-size: 1.5rem;
+  margin: -2px;
+  padding: 30px 90px 30px 90px;
+  background-color: #1E222A;
+  border: 6px solid #80A0C0;
+}
+.search-bar {
+  color: #88c0d0;
+}

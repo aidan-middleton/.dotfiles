@@ -15,6 +15,7 @@ alias ls='ls --color=auto'
 alias grep='grep --color=auto'
 alias ll='ls -alF'
 alias nv='nvim'
+alias neofetch='fastfetch'
 
 # create a zkbd compatible hash;
 # to add other keys to this hash, see: man 5 terminfo

@@ -19,19 +19,19 @@
             :onchange "")
     time))
 
-(defwidget workspace [id monitor active] (button :class {"workspace" + active + monitor}
-                                           :onclick { "hyprctl dispatch workspace " + id} id))
+(defwidget workspace [id name monitor active] (button :class { "workspace" + " " + (active ? "active" : "inactive") + " " + "ws" + monitor }
+                                           :onclick { "hyprctl dispatch workspace " + id} name))
 
 (deflisten workspaces :initial "[]" "scripts/get-workspaces")
 
 (defwidget workspaces []
   (box :class "workspaces"
        :orientation "h"
-       :space-evenly true
+       :space-evenly false
        :halign "start"
        :spacing 10
     (for workspace in workspaces
-      (workspace :id {workspace.id} :monitor {workspace.monitor} :active {workspace.active}))))
+      (workspace :id {workspace.id} :name {workspace.name} :monitor {workspace.monitorID} :active {workspace.isActive}))))
 
 
 (defwidget metric [label value onchange]

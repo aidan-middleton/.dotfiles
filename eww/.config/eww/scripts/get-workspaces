@@ -1,11 +1,10 @@
-#!/usr/bin/env python
-import subprocess
+#!/usr/bin/env python3
 import json
 import os
+import re
 import socket
+import subprocess
 import sys
-
-show_all = 0
 
 def cmd_to_json(cmd):
     try:
@@ -21,37 +20,41 @@ def cmd_to_json(cmd):
     except json.JSONDecodeError as e:
         print("Failed to parse JSON:", e)
 
-def get_workspace_info():
-    current_workspaces = cmd_to_json("hyprctl workspaces -j")
-    active_workspaces = [item["activeWorkspace"]["id"] for item in cmd_to_json("hyprctl monitors -j")]
-    workspace_info = []
-    if show_all == 1:
-        for i in range(1,11):
-            match = next((item for item in current_workspaces if item["id"] == i), None)
-            if match:
-                workspace_info.append({
-                    "id": match["id"],
-                    "monitor": match["monitorID"],
-                    "active": "active" if match["id"] in active_workspaces else "inactive"
-                })
-            else:
-                workspace_info.append({
-                    "id": i,
-                    "monitor": None,
-                    "active": "inactive"
-                })
-    else:
-        unsorted_info = []
-        for workspace in current_workspaces:
-            unsorted_info.append({
-                    "id": workspace["id"],
-                    "monitor": workspace["monitorID"],
-                    "active": "active" if workspace["id"] in active_workspaces else "inactive"
-                })
-        workspace_info = sorted(unsorted_info, key=lambda x: x['id'])
-    print(json.dumps(workspace_info), flush=True)
 
-get_workspace_info()
+delimeters = re.compile(r">>|,")
+
+workspaces_initial = cmd_to_json("hyprctl workspaces -j")
+monitors_initial = cmd_to_json("hyprctl monitors -j")
+
+workspaces = { }
+for workspace in workspaces_initial:
+    id = workspace["id"]
+    workspaces[id] = { }
+    workspaces[id]["id"] = workspace["id"]
+    workspaces[id]["name"] = workspace["name"]
+    workspaces[id]["monitor"] = workspace["monitor"]
+    workspaces[id]["monitorID"] = workspace["monitorID"]
+    workspaces[id]["isActive"] = False
+
+def print_workspaces():
+    sorted_workspaces = [workspaces[k] for k in sorted(workspaces)]
+    print(json.dumps(sorted_workspaces), flush=True)
+
+special = { }
+monitors = { }
+for monitor in monitors_initial:
+    monitors[monitor["name"]] = int(monitor["id"])
+    if monitor["focused"] == True:
+        current_monitor_name = monitor["name"]
+        current_monitor_id = monitor["id"]
+        current_workspace = int(monitor["activeWorkspace"]["id"])
+    if monitor["specialWorkspace"]["id"] != 0:
+        special_id = int(monitor["specialWorkspace"]["id"])
+        special[int(monitor["id"])] = special_id
+        workspaces[special_id]["isAvtive"] = True
+    active_id = int(monitor["activeWorkspace"]["id"])
+    workspaces[active_id]["isActive"] = True
+print_workspaces()
 
 sock_path = os.path.join(os.environ["XDG_RUNTIME_DIR"],"hypr",os.environ.get('HYPRLAND_INSTANCE_SIGNATURE', ''),".socket2.sock")
 # Connect to the UNIX socket
@@ -62,7 +65,44 @@ with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as client:
     with client.makefile('r', buffering=1) as sock_file:
         for line in sock_file:
             line = line.strip()
-            if "workspace>>" in line:
-                get_workspace_info()
-
-
+            arguments = delimeters.split(line)
+            # print(line)
+            match arguments[0]:
+                case "focusedmonv2":
+                    current_monitor_name = arguments[1]
+                    current_monitor_id = int(monitors[arguments[1]])
+                    current_workspace = arguments[2]
+                case "destroyworkspacev2":
+                    workspaces.pop(int(arguments[1]))
+                    print_workspaces()
+                case "workspacev2":
+                    old_workspace = current_workspace
+                    current_workspace = int(arguments[1])
+                    if workspaces.get(old_workspace) != None:
+                        workspaces[old_workspace]['isActive'] = False
+                    workspaces[current_workspace]['isActive'] = True
+                    print_workspaces()
+                case "createworkspacev2":
+                    id = int(arguments[1])
+                    workspaces[id] = { }
+                    workspaces[id]["id"] = id
+                    workspaces[id]["name"] = arguments[2]
+                    workspaces[id]["monitor"] = current_monitor_name
+                    workspaces[id]["monitorID"] = current_monitor_id
+                    workspaces[id]["isActive"] = False
+                    print_workspaces()
+                case "activespecialv2":
+                    monitor = arguments[3]
+                    monitor_id = monitors[monitor]
+                    if arguments[1] != '':
+                        id = int(arguments[1])
+                        workspaces[id]["id"] = id
+                        workspaces[id]["name"] = arguments[2]
+                        workspaces[id]["monitor"] = monitor
+                        workspaces[id]["monitorID"] = monitor_id
+                        workspaces[id]["isActive"] = True
+                        special[monitor_id] = id
+                    else:
+                        id = int(special[monitor_id])
+                        workspaces[id]["isActive"] = False 
+                    print_workspaces()

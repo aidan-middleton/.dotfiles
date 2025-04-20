@@ -67,7 +67,6 @@ with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as client:
         for line in sock_file:
             line = line.strip()
             arguments = delimeters.split(line)
-            print(line)
             match arguments[0]:
                 case "focusedmonv2":
                     current_monitor_name = arguments[1]

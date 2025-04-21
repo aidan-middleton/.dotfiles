@@ -16,6 +16,7 @@ alias grep='grep --color=auto'
 alias ll='ls -alF'
 alias nv='nvim'
 alias neofetch='fastfetch'
+alias icat="kitten icat"
 
 # create a zkbd compatible hash;
 # to add other keys to this hash, see: man 5 terminfo
@@ -61,3 +62,8 @@ fi
 export PS1='[%n@%m %1~]$ '
 
 PATH="$PATH:$HOME/.local/bin"
+
+ZSH_AUTOSUGGEST_MANUAL_REBIND=1
+
+source $ZDOTDIR/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source $ZDOTDIR/zsh-autosuggestions/zsh-autosuggestions.zsh

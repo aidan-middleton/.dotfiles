@@ -1,11 +1,13 @@
 #
 # ~/.zshrc
 #
-
-export QT_QPA_PLATFORM=xcb
+export GTK_THEME=Adwaita-dark:dark
+export QT_STYLE_OVERRIDE=adwaita-dark
+# export QT_QPA_PLATFORM=xcb
 export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_CACHE_HOME="$HOME/.cache"
 export XDG_DATA_HOME="$HOME/.local/share"
+export XDG_DATA_DIRS="$XDG_DATA_DIRS:/var/lib/flatpak/exports/share:/home/aidan/.local/share/flatpak/exports/share"
 export XDG_STATE_HOME="$HOME/.local/state"
 export CARGO_HOME="$XDG_DATA_HOME"/cargo 
 export CUDA_CACHE_PATH="$XDG_CACHE_HOME"/nv
@@ -33,6 +35,8 @@ alias ll='ls -alF'
 alias nv='nvim'
 alias neofetch='fastfetch'
 alias icat="kitten icat"
+alias vizsh="vim ~/.config/zsh/.zshrc && source ~/.config/zsh/.zshrc"
+alias grep='grep --color=auto'
 
 # create a zkbd compatible hash;
 # to add other keys to this hash, see: man 5 terminfo

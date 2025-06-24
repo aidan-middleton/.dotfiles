@@ -47,7 +47,6 @@
     :exclusive "false"   
   (box :orientation "h" time))
 
-
 (defwidget metric [label value onchange]
   (box :class "metric"
        :orientation "h"

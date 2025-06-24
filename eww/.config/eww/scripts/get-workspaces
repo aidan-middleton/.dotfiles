@@ -5,7 +5,6 @@ import os
 import re
 import socket
 import subprocess
-import sys
 
 def cmd_to_json(cmd):
     try:
@@ -20,6 +19,7 @@ def cmd_to_json(cmd):
         print("Command failed:", e)
     except json.JSONDecodeError as e:
         print("Failed to parse JSON:", e)
+    return []
 
 
 delimeters = re.compile(r">>|,")
@@ -56,6 +56,10 @@ for monitor in monitors_initial:
     active_id = int(monitor["activeWorkspace"]["id"])
     workspaces[active_id]["isActive"] = True
 print_workspaces()
+
+current_workspace = ""
+current_monitor_name = ""
+current_monitor_id = 0
 
 sock_path = os.path.join(os.environ["XDG_RUNTIME_DIR"],"hypr",os.environ.get('HYPRLAND_INSTANCE_SIGNATURE', ''),".socket2.sock")
 # Connect to the UNIX socket

@@ -26,6 +26,11 @@ export HISTSIZE=10000
 export SAVEHIST=10000
 setopt appendhistory
 
+export PYENV_ROOT="$HOME/.pyenv"
+export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init --path)"
+eval "$(pyenv init -)"
+
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 
@@ -39,10 +44,9 @@ alias neofetch='fastfetch'
 alias icat="kitten icat"
 alias vizsh="${EDITOR} ~/.config/zsh/.zshrc && source ~/.config/zsh/.zshrc"
 alias vihypr="${EDITOR} ~/.config/hypr/hyprland.conf"
-alias vihypr="${EDITOR} ~/.config/hypr/hyprland.conf"
 alias vinv="${EDITOR} ~/.config/nvim/init.lua"
 alias grep='grep --color=auto'
-
+alias vactivate='source venv/bin/activate'
 # create a zkbd compatible hash;
 # to add other keys to this hash, see: man 5 terminfo
 typeset -g -A key

@@ -42,11 +42,13 @@ alias ll='ls -alF'
 alias nv='nvim'
 alias neofetch='fastfetch'
 alias icat="kitten icat"
-alias vizsh="${EDITOR} ~/.config/zsh/.zshrc && source ~/.config/zsh/.zshrc"
-alias vihypr="${EDITOR} ~/.config/hypr/hyprland.conf"
-alias vinv="${EDITOR} ~/.config/nvim/init.lua"
+alias vihypr="${EDITOR} ${XDG_CONFIG_HOME}/hypr/hyprland.conf"
+alias vinv="${EDITOR} ${XDG_CONFIG_HOME}/nvim/init.lua"
+alias viranger="${EDITOR} ${XDG_CONFIG_HOME}/ranger/rc.conf"
+alias vizsh="${EDITOR} ${XDG_CONFIG_HOME}/zsh/.zshrc && source ${XDG_CONFIG_HOME}/zsh/.zshrc"
 alias grep='grep --color=auto'
 alias vactivate='source venv/bin/activate'
+alias clear="printf '\033[2J\033[3J\033[1;1H'"
 # create a zkbd compatible hash;
 # to add other keys to this hash, see: man 5 terminfo
 typeset -g -A key

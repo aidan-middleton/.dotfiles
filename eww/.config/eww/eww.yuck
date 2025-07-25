@@ -35,14 +35,15 @@
 
 (defwindow menu
     :monitor 1
-    :class "bar"
-    :windowtype "dock"
+    :class "menu"
+    :windowtype "toolbar"
     :geometry (geometry
       :x "0%"
       :y "0%"
       :width "100%"
       :height "20px"
       :anchor "top center")
+    :reserve (struts :side "top" :distance "4%")
     :stacking "fg"
     :exclusive "false"   
   (box :orientation "h" time))

@@ -7,8 +7,6 @@ import socket
 import subprocess
 
 def cmd_to_json(cmd):
-    '''
-    '''
     try:
         result = subprocess.run(
             cmd.split(),
@@ -200,9 +198,10 @@ with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as client:
                     print_workspaces()
                 case "closewindow":
                     address = arguments[1]
-                    client = clients[address]
-                    id = client["workspace"]
-                    icon = client["icon"]
-                    workspaces[id]["clients"].remove(icon)
-                    del clients[address]
-                    print_workspaces()
+                    if address in clients:
+                        client = clients[address]
+                        id = client["workspace"]
+                        icon = client["icon"]
+                        workspaces[id]["clients"].remove(icon)
+                        del clients[address]
+                        print_workspaces()

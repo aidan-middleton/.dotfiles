@@ -19,8 +19,23 @@
             :onchange "")
     time))
 
-(defwidget workspace [id name monitor active] (button :class { "workspace" + " " + (active ? "active" : "inactive") + " " + "ws" + monitor }
-                                           :onclick { "hyprctl dispatch workspace " + id} name))
+(defwidget workspace [id name monitor active clients] 
+  (button :class { "workspace" + " " + (active ? "active" : "inactive") + " " + "ws" + monitor }
+          :onclick { "hyprctl dispatch workspace " + id}
+    (box :orientation "h" 
+         :space-evenly false 
+         :spacing 5
+      (label :text name)
+      (box :orientation "h" 
+           :space-evenly false 
+           :spacing 2
+           :visible {arraylength(clients) > 0}
+        (label :text "[")
+        (for client in clients
+          (image :path client
+                 :image-width 12
+                 :image-height 12))
+        (label :text "]")))))
 
 (deflisten workspaces :initial "[]" "scripts/get-workspaces")
 
@@ -31,7 +46,7 @@
        :halign "start"
        :spacing 10
     (for workspace in workspaces
-      (workspace :id {workspace.id} :name {workspace.name} :monitor {workspace.monitorID} :active {workspace.isActive}))))
+      (workspace :id {workspace.id} :name {workspace.name} :monitor {workspace.monitorID} :active {workspace.isActive} :clients {workspace.clients}))))
 
 (defwindow menu
     :monitor 1

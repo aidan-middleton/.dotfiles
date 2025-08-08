@@ -77,7 +77,7 @@ $ws-inactive-6: $dark_cyan;
 
 // Workspaces
 .workspace {
-  &.active {
+    &.active {
     &.ws0 { color: $ws-active-0; }
     &.ws1 { color: $ws-active-1; }
     &.ws2 { color: $ws-active-2; }
@@ -97,4 +97,3 @@ $ws-inactive-6: $dark_cyan;
     &.ws6 { color: $ws-inactive-6; }
   }
 }
-

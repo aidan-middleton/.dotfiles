@@ -14,13 +14,20 @@ vim.opt.rtp:prepend(lazypath)
 
 local lazy = require("lazy")
 
+function load_config(plugin)
+    return function()
+        require("plugins." .. plugin)
+    end
+end
+
 -- Plugins
 lazy.setup({
-  { "neovim/nvim-lspconfig" },  -- LSP support
-  { "hrsh7th/nvim-cmp" },       -- Completion plugin
-  { "hrsh7th/cmp-nvim-lsp" },   -- LSP source for nvim-cmp
-  { "L3MON4D3/LuaSnip" },       -- Snippet engine
+  { "neovim/nvim-lspconfig", config = load_config("lspconfig") }, -- LSP support
+  { "hrsh7th/nvim-cmp", config = load_config("completion") }, -- Completion plugin
+  { "hrsh7th/cmp-nvim-lsp" }, -- LSP source for nvim-cmp
+  { "L3MON4D3/LuaSnip" }, -- Snippet engine
   { "saadparwaiz1/cmp_luasnip" }, -- Snippet completions
-  { "nvim-treesitter/nvim-treesitter", branch = 'master', lazy = false, build = ":TSUpdate"},
-  { "norcalli/nvim-colorizer.lua" },
+  { "nvim-treesitter/nvim-treesitter", config = load_config("treesitter"), branch = 'master', lazy = false, build = ":TSUpdate"},
+  { "norcalli/nvim-colorizer.lua", config = load_config("colorizer") },
+  { "nvim-telescope/telescope.nvim", tag = '0.1.8', dependencies = { 'nvim-lua/plenary.nvim' } }
 })

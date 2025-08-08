@@ -41,6 +41,10 @@ def print_workspaces():
     sorted_workspaces = [workspaces[k] for k in sorted(workspaces)]
     print(json.dumps(sorted_workspaces), flush=True)
 
+current_workspace = ""
+current_monitor_name = ""
+current_monitor_id = 0
+
 special = { }
 monitors = { }
 for monitor in monitors_initial:
@@ -56,10 +60,6 @@ for monitor in monitors_initial:
     active_id = int(monitor["activeWorkspace"]["id"])
     workspaces[active_id]["isActive"] = True
 print_workspaces()
-
-current_workspace = ""
-current_monitor_name = ""
-current_monitor_id = 0
 
 sock_path = os.path.join(os.environ["XDG_RUNTIME_DIR"],"hypr",os.environ.get('HYPRLAND_INSTANCE_SIGNATURE', ''),".socket2.sock")
 # Connect to the UNIX socket
@@ -80,6 +80,7 @@ with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as client:
                     workspaces.pop(int(arguments[1]))
                     print_workspaces()
                 case "workspacev2":
+                    print(current_workspace)
                     old_workspace = int(current_workspace)
                     current_workspace = int(arguments[1])
                     if workspaces.get(old_workspace) != None:

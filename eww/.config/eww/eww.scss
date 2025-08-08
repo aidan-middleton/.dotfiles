@@ -1,39 +1,73 @@
+// Base Colors
+$black:         #000000;
+$white:         #FFFFFF;
+$dark_gray:     #222222;
+$red:           #ff0000;
+$dark_red:      #800000;
+$green:         #00ff00;
+$dark_green:    #008000;
+$blue:          #0000ff;
+$dark_blue:     #000080;
+$yellow:        #ffff00;
+$dark_yellow:   #808000;
+$magenta:       #ff00ff;
+$dark_magenta:  #800080;
+$cyan:          #00ffff;
+$dark_cyan:     #008080;
+
+// Additional Colors
+$soft_pink:     #ffd5cd;
+
+// Workspace Colors
+$ws-active-0:   $red;
+$ws-active-1:   $green;
+$ws-active-2:   $blue;
+$ws-active-3:   $yellow;
+$ws-active-4:   $blue;
+$ws-active-5:   $magenta;
+$ws-active-6:   $cyan;
+
+$ws-inactive-0: $dark_red;
+$ws-inactive-1: $dark_green;
+$ws-inactive-2: $dark_blue;
+$ws-inactive-3: $dark_yellow;
+$ws-inactive-4: $dark_blue;
+$ws-inactive-5: $dark_magenta;
+$ws-inactive-6: $dark_cyan;
+
+
+// Global Reset
 * {
   all: unset; // Unsets everything so you can style everything from scratch
   font-family: "ComicCode Nerd Font"; 
   font-size: 12px;
 }
 
+// Menu
 .menu {
-  background-color:#000000;
-  color: #FFFFFF;
+  background-color: $black;
+  color: $white;
   padding: 2px;
 }
 
-// Global Styles
+// Bar
 .bar {
-  background-color: #000000;
-  color: #FFFFFF;
+  background-color: $black;
+  color: $white;
   padding: 2px;
 }
 
-// Styles on classes (see eww.yuck for more information)
-
-.sidestuff slider {
-  all: unset;
-  color: #ffd5cd;
-}
-
+// Metrics
 .metric scale trough highlight {
   all: unset;
-  background-color: #FFFFFF;
-  color: #000000;
+  background-color: $white;
+  color: $black;
   border-radius: 10px;
 }
 
 .metric scale trough {
   all: unset;
-  background-color: #222222;
+  background-color: $dark_gray;
   border-radius: 50px;
   min-height: 3px;
   min-width: 50px;
@@ -41,25 +75,26 @@
   margin-right: 20px;
 }
 
+// Workspaces
 .workspace {
   &.active {
-    &.ws0 { color: #ff0000; }
-    &.ws1 { color: #00ff00; }
-    &.ws2 { color: #0000ff; }
-    &.ws3 { color: #ffff00; }
-    &.ws4 { color: #0000ff; }
-    &.ws5 { color: #ff00ff; }
-    &.ws6 { color: #00ffff; }
+    &.ws0 { color: $ws-active-0; }
+    &.ws1 { color: $ws-active-1; }
+    &.ws2 { color: $ws-active-2; }
+    &.ws3 { color: $ws-active-3; }
+    &.ws4 { color: $ws-active-4; }
+    &.ws5 { color: $ws-active-5; }
+    &.ws6 { color: $ws-active-6; }
   }
 
   &.inactive {
-    &.ws0 { color: #800000; }
-    &.ws1 { color: #008000; }
-    &.ws2 { color: #000080; }
-    &.ws3 { color: #808000; }
-    &.ws4 { color: #000080; }
-    &.ws5 { color: #800080; }
-    &.ws6 { color: #008080; }
+    &.ws0 { color: $ws-inactive-0; }
+    &.ws1 { color: $ws-inactive-1; }
+    &.ws2 { color: $ws-inactive-2; }
+    &.ws3 { color: $ws-inactive-3; }
+    &.ws4 { color: $ws-inactive-4; }
+    &.ws5 { color: $ws-inactive-5; }
+    &.ws6 { color: $ws-inactive-6; }
   }
 }
 

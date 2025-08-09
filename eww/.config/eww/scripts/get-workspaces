@@ -121,7 +121,7 @@ for client in clients_initial:
     client_class = client["class"]
     icon = get_icon(client_class)
     workspaces[id]["clients"].append(icon)
-    clients["address"] = {"workspace": id, "icon": icon}
+    clients[address] = {"workspace": id, "icon": icon}
 
 for monitor in monitors_initial:
     monitors[monitor["name"]] = int(monitor["id"])
@@ -205,3 +205,14 @@ with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as client:
                         workspaces[id]["clients"].remove(icon)
                         del clients[address]
                         print_workspaces()
+                case "movewindow":
+                    address = f"0x{arguments[1]}"
+                    id = int(arguments[2])
+                    client = clients[address]
+                    icon = client["icon"]
+                    old_id = client["workspace"]
+                    if old_id in workspaces:
+                        workspaces[old_id]["clients"].remove(icon)
+                    clients[address]["workspace"] = id
+                    workspaces[id]["clients"].append(icon)
+                    print_workspaces()

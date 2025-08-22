@@ -48,7 +48,33 @@ alias viranger="${EDITOR} ${XDG_CONFIG_HOME}/ranger/rc.conf"
 alias vizsh="${EDITOR} ${XDG_CONFIG_HOME}/zsh/.zshrc && source ${XDG_CONFIG_HOME}/zsh/.zshrc"
 alias grep='grep --color=auto'
 alias vactivate='source venv/bin/activate'
-alias clear="printf '\033[2J\033[3J\033[1;1H'"
+alias superclear="printf '\033[2J\033[3J\033[1;1H'"
+
+# Delete WirePlumber state and restart service
+restart_wireplumber() {
+    local state_dir="$HOME/.local/state/wireplumber"
+
+    # Ensure directory exists before deletion
+    if [[ -d "$state_dir" ]]; then
+        echo "Deleting: $state_dir"
+        rm -rf -- "$state_dir" || {
+            echo "Error: Failed to delete $state_dir" >&2
+            return 1
+        }
+    else
+        echo "Directory not found: $state_dir"
+    fi
+
+    # Restart the systemd user service
+    echo "Restarting WirePlumber service..."
+    systemctl --user restart wireplumber || {
+        echo "Error: Failed to restart wireplumber" >&2
+        return 1
+    }
+
+    echo "WirePlumber state cleared and service restarted."
+}
+
 # create a zkbd compatible hash;
 # to add other keys to this hash, see: man 5 terminfo
 typeset -g -A key

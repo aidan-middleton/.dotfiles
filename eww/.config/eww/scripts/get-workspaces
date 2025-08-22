@@ -7,6 +7,22 @@ import socket
 import subprocess
 
 def cmd_to_json(cmd):
+    """
+    Execute a shell command and parse its output as JSON.
+    
+    Args:
+        cmd (str): The shell command to execute (space-separated).
+        
+    Returns:
+        list|dict: The parsed JSON output from the command, or empty list on failure.
+        
+    Raises:
+        Prints error messages for subprocess failures or JSON parsing errors.
+        
+    Example:
+        >>> workspaces = cmd_to_json("hyprctl workspaces -j")
+        >>> monitors = cmd_to_json("hyprctl monitors -j")
+    """
     try:
         result = subprocess.run(
             cmd.split(),
@@ -22,6 +38,27 @@ def cmd_to_json(cmd):
     return []
 
 def get_icon(client: str) -> str:
+    """
+    Resolve the icon path for a given client application class.
+    
+    This function performs a multi-step icon resolution process:
+    1. Gets the current icon theme from GNOME settings
+    2. Falls back to the default system icon theme
+    3. Searches for the application's .desktop file
+    4. Extracts the icon name from the .desktop file
+    5. Searches for the icon file in various theme directories
+    6. Falls back to a default application icon if nothing is found
+    
+    Args:
+        client (str): The application class name (e.g., "firefox", "code").
+        
+    Returns:
+        str: The full path to the icon file, or empty string if no icon found.
+        
+    Example:
+        >>> icon_path = get_icon("firefox")
+        >>> print(icon_path)  # "/usr/share/icons/Adwaita/16x16/apps/firefox.svg"
+    """
     # Get the currently set icon theme
     cmd = "gsettings get org.gnome.desktop.interface icon-theme"
     icon_theme = None
@@ -87,6 +124,23 @@ def get_icon(client: str) -> str:
     return icon_path
 
 def print_workspaces():
+    """
+    Output the current workspace state as JSON to stdout.
+    
+    Sorts workspaces by ID and prints them as a JSON array. This function
+    is called whenever the workspace state changes to provide real-time updates.
+    
+    The output format includes workspace metadata such as:
+    - id: Workspace ID number
+    - name: Workspace name
+    - monitor: Monitor name the workspace is on
+    - monitorID: Numeric monitor ID
+    - isActive: Whether this workspace is currently active
+    - clients: Array of icon paths for clients in this workspace
+    
+    Side Effects:
+        Writes JSON to stdout with flush=True for immediate output.
+    """ 
     sorted_workspaces = [workspaces[k] for k in sorted(workspaces)]
     print(json.dumps(sorted_workspaces), flush=True)
 
@@ -117,7 +171,7 @@ for workspace in workspaces_initial:
 
 for client in clients_initial:
     id = client["workspace"]["id"]
-    address = client["address"]
+    address = client["address"].removeprefix("0x")
     client_class = client["class"]
     icon = get_icon(client_class)
     workspaces[id]["clients"].append(icon)
@@ -206,13 +260,14 @@ with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as client:
                         del clients[address]
                         print_workspaces()
                 case "movewindow":
-                    address = f"0x{arguments[1]}"
-                    id = int(arguments[2])
-                    client = clients[address]
-                    icon = client["icon"]
-                    old_id = client["workspace"]
-                    if old_id in workspaces:
-                        workspaces[old_id]["clients"].remove(icon)
-                    clients[address]["workspace"] = id
-                    workspaces[id]["clients"].append(icon)
-                    print_workspaces()
+                    address = arguments[1]
+                    if address in clients:
+                        id = int(arguments[2])
+                        client = clients[address]
+                        icon = client["icon"]
+                        old_id = client["workspace"]
+                        if old_id in workspaces:
+                            workspaces[old_id]["clients"].remove(icon)
+                        clients[address]["workspace"] = id
+                        workspaces[id]["clients"].append(icon)
+                        print_workspaces()

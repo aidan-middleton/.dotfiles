@@ -13,10 +13,9 @@ vim.opt.tabstop = 4
 vim.opt.termguicolors = true
 vim.opt.undofile = true 
 
-vim.opt.foldmethod = 'expr'
-vim.opt.foldexpr = 'nvim_treesitter#foldexpr()'
+vim.opt.foldmethod = 'indent'
 vim.opt.foldlevel = 99
-vim.opt.foldenable = true
+vim.opt.foldenable = false
 
 -- Set space as leader key (optional, if not already set)
 vim.g.mapleader = " "

@@ -1,6 +1,0 @@
--- Exclude some filetypes from highlighting by using `!`
-require 'colorizer'.setup {
-  '*'; -- Highlight all files, but customize some others.
-  css = { rgb_fn = true; }; -- Enable parsing rgb(...) functions in css.
-}
-

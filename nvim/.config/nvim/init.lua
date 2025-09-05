@@ -91,18 +91,27 @@ cmp.setup({
 
 --[[ PLUGIN: norcalli/nvim-colorizer.lua ]]
 require 'colorizer'.setup {
-    '*'; -- Highlight all files, but customize some others.
+    '*'; -- Highlight all files, but customize some others. (Note: use ! to exclude)
     css = { rgb_fn = true; }; -- Enable parsing rgb(...) functions in css.
 }
 
 
 --[[ PLUGIN: nvim-treesitter/nvim-treesitter ]]
-require'nvim-treesitter.configs'.setup {
-      ensure_installed = { "c", "cpp", "lua", "vim", "vimdoc", "query", "markdown", "markdown_inline", "python", "javascript" },
-      sync_install = false,
-      auto_install = true,
-      highlight = {
+require 'nvim-treesitter.configs'.setup {
+    ensure_installed = { "c", "cpp", "lua", "vim", "vimdoc", "query", "markdown", "markdown_inline", "python", "javascript" },
+    sync_install = false,
+    auto_install = true,
+    highlight = {
         enable = true,
         additional_vim_regex_highlighting = false,
-      },
+    },
 }
+
+--[[ PLUGIN: nvim-telescope/telescope.nvim]]
+local telescope = require('telescope')
+telescope.setup{}
+local telescope_builtin = require('telescope.builtin')
+vim.keymap.set('n', '<leader>ff', telescope_builtin.find_files, { desc = 'Telescope find files' })
+vim.keymap.set('n', '<leader>fg', telescope_builtin.live_grep, { desc = 'Telescope live grep' })
+vim.keymap.set('n', '<leader>fb', telescope_builtin.buffers, { desc = 'Telescope buffers' })
+vim.keymap.set('n', '<leader>fh', telescope_builtin.help_tags, { desc = 'Telescope help tags' })

@@ -1,7 +1,6 @@
 -- ~/.config/nvim/init.lua
 
 -- custom variables
-
 local theme = "my-theme"
 
 -- vim options
@@ -34,13 +33,76 @@ vim.keymap.set("v", "<leader>P", '"+P', { noremap = true, silent = true })      
 
 -- Optional: diagnostics config
 vim.diagnostic.config({
-  virtual_text = true,
-  signs = true,
-  underline = true,
+    virtual_text = true,
+    signs = true,
+    underline = true,
 })
 
 -- Setup commands
 vim.cmd("colorscheme " .. theme)
 
--- Load plugins
-require("plugins.lazy") 
+-- [[ lazy.nvim setup ]]
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not vim.loop.fs_stat(lazypath) then
+    -- Optional: auto-clone if not found
+    vim.fn.system({
+        "git",
+        "clone",
+        "--filter=blob:none",
+        "https://github.com/folke/lazy.nvim.git",
+        lazypath,
+    })
+end
+vim.opt.rtp:prepend(lazypath)
+
+require("lazy").setup({
+    { "neovim/nvim-lspconfig"}, -- LSP support
+    { "hrsh7th/nvim-cmp"}, -- Completion plugin
+    { "hrsh7th/cmp-nvim-lsp" }, -- LSP source for nvim-cmp
+    { "L3MON4D3/LuaSnip" }, -- Snippet engine
+    { "saadparwaiz1/cmp_luasnip" }, -- Snippet completions
+    { "nvim-treesitter/nvim-treesitter", branch = 'master', lazy = false, build = ":TSUpdate"},
+    { "norcalli/nvim-colorizer.lua" },
+    { "nvim-telescope/telescope.nvim", tag = '0.1.8', dependencies = { 'nvim-lua/plenary.nvim' } }
+})
+
+--[[ PLUGIN: neovim/nvim-lspconfig]]
+local lspconfig = require("lspconfig")
+lspconfig.pyright.setup{} -- Enable pyright for Python
+
+--[[ PLUGIN: hrsh7th/nvim-cmp ]] 
+local cmp = require("cmp")
+cmp.setup({
+    snippet = {
+        expand = function(args)
+            require("luasnip").lsp_expand(args.body)
+        end,
+    },
+    mapping = cmp.mapping.preset.insert({
+        ['<C-Space>'] = cmp.mapping.complete(),
+        ['<CR>'] = cmp.mapping.confirm({ select = true }),
+    }),
+    sources = {
+        { name = 'nvim_lsp' },
+        { name = 'luasnip' },
+        { name = 'render-markdown' },
+    }
+})
+
+--[[ PLUGIN: norcalli/nvim-colorizer.lua ]]
+require 'colorizer'.setup {
+    '*'; -- Highlight all files, but customize some others.
+    css = { rgb_fn = true; }; -- Enable parsing rgb(...) functions in css.
+}
+
+
+--[[ PLUGIN: nvim-treesitter/nvim-treesitter ]]
+require'nvim-treesitter.configs'.setup {
+      ensure_installed = { "c", "cpp", "lua", "vim", "vimdoc", "query", "markdown", "markdown_inline", "python", "javascript" },
+      sync_install = false,
+      auto_install = true,
+      highlight = {
+        enable = true,
+        additional_vim_regex_highlighting = false,
+      },
+}

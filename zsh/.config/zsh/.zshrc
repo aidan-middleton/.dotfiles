@@ -53,7 +53,6 @@ alias superclear="printf '\033[2J\033[3J\033[1;1H'"
 # Delete WirePlumber state and restart service
 restart_wireplumber() {
     local state_dir="$HOME/.local/state/wireplumber"
-
     # Ensure directory exists before deletion
     if [[ -d "$state_dir" ]]; then
         echo "Deleting: $state_dir"
@@ -64,21 +63,17 @@ restart_wireplumber() {
     else
         echo "Directory not found: $state_dir"
     fi
-
     # Restart the systemd user service
     echo "Restarting WirePlumber service..."
     systemctl --user restart wireplumber || {
         echo "Error: Failed to restart wireplumber" >&2
         return 1
     }
-
     echo "WirePlumber state cleared and service restarted."
 }
 
-# create a zkbd compatible hash;
-# to add other keys to this hash, see: man 5 terminfo
+# create a zkbd compatible hash; to add other keys to this hash, see: man 5 terminfo
 typeset -g -A key
-
 key[Home]="${terminfo[khome]}"
 key[End]="${terminfo[kend]}"
 key[Insert]="${terminfo[kich1]}"
@@ -91,8 +86,6 @@ key[Right]="${terminfo[kcuf1]}"
 key[PageUp]="${terminfo[kpp]}"
 key[PageDown]="${terminfo[knp]}"
 key[Shift-Tab]="${terminfo[kcbt]}"
-
-# setup key accordingly
 [[ -n "${key[Home]}"      ]] && bindkey -- "${key[Home]}"       beginning-of-line
 [[ -n "${key[End]}"       ]] && bindkey -- "${key[End]}"        end-of-line
 [[ -n "${key[Insert]}"    ]] && bindkey -- "${key[Insert]}"     overwrite-mode
@@ -106,8 +99,7 @@ key[Shift-Tab]="${terminfo[kcbt]}"
 [[ -n "${key[PageDown]}"  ]] && bindkey -- "${key[PageDown]}"   end-of-buffer-or-history
 [[ -n "${key[Shift-Tab]}" ]] && bindkey -- "${key[Shift-Tab]}"  reverse-menu-complete
 
-# Finally, make sure the terminal is in application mode, when zle is
-# active. Only then are the values from $terminfo valid.
+# Make sure the terminal is in application mode, when zle is active. Only then are the values from $terminfo valid.
 if (( ${+terminfo[smkx]} && ${+terminfo[rmkx]} )); then
 	autoload -Uz add-zle-hook-widget
 	function zle_application_mode_start { echoti smkx }

@@ -42,6 +42,43 @@ vim.diagnostic.config({
 vim.cmd("colorscheme " .. theme)
 
 --
+-- Tab line
+--
+
+vim.o.tabline = "%!v:lua.TabLine()"
+
+function TabLine()
+    local s = ""
+    local current_tab = vim.api.nvim_get_current_tabpage()
+    local tabs = vim.api.nvim_list_tabpages()
+
+    for i, tab in ipairs(tabs) do
+        local tab_number = i
+        local wins = vim.api.nvim_tabpage_list_wins(tab)
+        local bufname = ""
+
+        -- Get filename of first window in tab
+        if #wins > 0 then
+            local buf = vim.api.nvim_win_get_buf(wins[1])
+            bufname = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(buf), ":t") -- filename only
+        end
+
+        -- Highlight current tab
+        if tab == current_tab then
+            s = s .. "%#TabLineSel#"
+        else
+            s = s .. "%#TabLine#"
+        end
+
+        -- Add tab number and filename
+        s = s .. " " .. tab_number .. " " .. (bufname ~= "" and bufname or "[No Name]") .. " "
+    end
+
+    s = s .. "%#TabLineFill#"
+    return s
+end
+
+--
 -- LSP Setup
 --
 
@@ -90,11 +127,148 @@ setup_lsp('clangd', {
         "--completion-style=detailed",
         "--function-arg-placeholders",
         "--fallback-style=llvm",
+        "--query-driver=/usr/bin/clang++",
     },
     filetypes = { "c", "cpp", "objc", "objcpp", "cuda" },
     root_markers = { ".clangd", ".clang-tidy", ".clang-format", "compile_commands.json", "compile_flags.txt", "configure.ac", ".git"},
 })
 setup_lsp('codelld')
+
+-- LANGUAGE: Go
+setup_lsp('gopls', {
+    cmd = {"gopls"},  -- optional if gopls is in PATH
+    settings = {
+        gopls = {
+            analyses = {
+                unusedparams = true,
+                nilness = true,
+                shadow = true,
+            },
+            staticcheck = true,
+            gofumpt = true,  -- strict formatting
+        },
+    },
+})
+
+-- LANGUAGE: Rust
+
+setup_lsp('rust-analyzer', {
+    cmd = { 'rust-analyzer' },
+    filetypes = { 'rust' },
+    root_dir = function(bufnr, on_dir)
+        local fname = vim.api.nvim_buf_get_name(bufnr)
+        local is_library = function()
+            local user_home = vim.fs.normalize(vim.env.HOME)
+            local cargo_home = os.getenv 'CARGO_HOME' or user_home .. '/.cargo'
+            local registry = cargo_home .. '/registry/src'
+            local git_registry = cargo_home .. '/git/checkouts'
+
+            local rustup_home = os.getenv 'RUSTUP_HOME' or user_home .. '/.rustup'
+            local toolchains = rustup_home .. '/toolchains'
+
+            for _, item in ipairs { toolchains, registry, git_registry } do
+                if vim.fs.relpath(item, fname) then
+                    local clients = vim.lsp.get_clients { name = 'rust_analyzer' }
+                    return #clients > 0 and clients[#clients].config.root_dir or nil
+                end
+            end
+        end
+        local reused_dir = is_library()
+        if reused_dir then
+            on_dir(reused_dir)
+            return
+        end
+
+        local cargo_crate_dir = vim.fs.root(fname, { 'Cargo.toml' })
+        local cargo_workspace_root
+
+        if cargo_crate_dir == nil then
+            on_dir(
+                vim.fs.root(fname, { 'rust-project.json' })
+                    or vim.fs.dirname(vim.fs.find('.git', { path = fname, upward = true })[1])
+            )
+            return
+        end
+
+        local cmd = {
+            'cargo',
+            'metadata',
+            '--no-deps',
+            '--format-version',
+            '1',
+            '--manifest-path',
+            cargo_crate_dir .. '/Cargo.toml',
+        }
+
+        vim.system(cmd, { text = true }, function(output)
+            if output.code == 0 then
+                if output.stdout then
+                    local result = vim.json.decode(output.stdout)
+                    if result['workspace_root'] then
+                        cargo_workspace_root = vim.fs.normalize(result['workspace_root'])
+                    end
+                end
+
+                on_dir(cargo_workspace_root or cargo_crate_dir)
+            else
+                vim.schedule(function()
+                    vim.notify(('[rust_analyzer] cmd failed with code %d: %s\n%s'):format(output.code, cmd, output.stderr))
+                end)
+            end
+        end)
+    end,
+    capabilities = {
+        experimental = {
+            serverStatusNotification = true,
+            commands = {
+                commands = {
+                    'rust-analyzer.showReferences',
+                    'rust-analyzer.runSingle',
+                    'rust-analyzer.debugSingle',
+                },
+            },
+        },
+    },
+    before_init = function(init_params, config)
+        -- See https://github.com/rust-lang/rust-analyzer/blob/eb5da56d839ae0a9e9f50774fa3eb78eb0964550/docs/dev/lsp-extensions.md?plain=1#L26
+        if config.settings and config.settings['rust-analyzer'] then
+            init_params.initializationOptions = config.settings['rust-analyzer']
+        end
+        ---@param command table{ title: string, command: string, arguments: any[] }
+        vim.lsp.commands['rust-analyzer.runSingle'] = function(command)
+            local r = command.arguments[1]
+            local cmd = { 'cargo', unpack(r.args.cargoArgs) }
+            if r.args.executableArgs and #r.args.executableArgs > 0 then
+                vim.list_extend(cmd, { '--', unpack(r.args.executableArgs) })
+            end
+
+            local proc = vim.system(cmd, { cwd = r.args.cwd })
+
+            local result = proc:wait()
+
+            if result.code == 0 then
+                vim.notify(result.stdout, vim.log.levels.INFO)
+            else
+                vim.notify(result.stderr, vim.log.levels.ERROR)
+            end
+        end
+    end,
+    on_attach = function(_, bufnr)
+        vim.api.nvim_buf_create_user_command(bufnr, 'LspCargoReload', function()
+            local clients = vim.lsp.get_clients { bufnr = bufnr, name = 'rust_analyzer' }
+            for _, client in ipairs(clients) do
+                vim.notify 'Reloading Cargo Workspace'
+                ---@diagnostic disable-next-line:param-type-mismatch
+                client:request('rust-analyzer/reloadWorkspace', nil, function(err)
+                    if err then
+                        error(tostring(err))
+                    end
+                    vim.notify 'Cargo workspace reloaded'
+                end, 0)
+            end
+        end, { desc = 'Reload current cargo workspace' })
+    end,
+})
 
 --
 -- PLUGINS
@@ -120,8 +294,11 @@ require("lazy").setup({
                     end,
                 },
                 mapping = cmp.mapping.preset.insert({
-                    ['<C-Space>'] = cmp.mapping.complete(),
-                    ['<CR>'] = cmp.mapping.confirm({ select = true }),
+                  ['<C-b>'] = cmp.mapping.scroll_docs(-4),
+                  ['<C-f>'] = cmp.mapping.scroll_docs(4),
+                  ['<C-Space>'] = cmp.mapping.complete(),
+                  ['<C-e>'] = cmp.mapping.abort(),
+                  ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
                 }),
                 sources = {
                     { name = 'nvim_lsp' },
@@ -163,6 +340,11 @@ require("lazy").setup({
             vim.keymap.set('n', '<leader>fg', builtin.live_grep, { desc = 'Telescope live grep' })
             vim.keymap.set('n', '<leader>fb', builtin.buffers, { desc = 'Telescope buffers' })
             vim.keymap.set('n', '<leader>fh', builtin.help_tags, { desc = 'Telescope help tags' })
+            vim.keymap.set('n', '<leader>fc', builtin.git_commits, { desc = 'Telescope help tags' })
+            vim.keymap.set('n', '<leader>fk', builtin.keymaps, { desc = 'Telescope key maps' })
+            require 'telescope'.setup{
+                defaults = { mappings = { i = { ["<C-h>"] = "which_key" } } }
+            }
         end
     },
     { "mason-org/mason.nvim",
@@ -170,8 +352,6 @@ require("lazy").setup({
             require("mason").setup()
         end
     },
-    {
-       "m4xshen/hardtime.nvim",
-       lazy = false, dependencies = { "MunifTanjim/nui.nvim" }, opts = {},
-    },
+    { "mfussenegger/nvim-dap" },
+    { "mfussenegger/nvim-jdtls" },
 })

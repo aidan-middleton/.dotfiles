@@ -1,8 +1,9 @@
 #
 # ~/.zshrc
 #
-export GTK_THEME=Adwaita-dark:dark
-export QT_STYLE_OVERRIDE=adwaita-dark
+export GTK_THEME=Dracula:dark
+export QT_QPA_PLATFORMTHEME=qt5ct
+# export QT_STYLE_OVERRIDE=Dracula
 # export QT_QPA_PLATFORM=xcb
 export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_CACHE_HOME="$HOME/.cache"
@@ -113,6 +114,8 @@ export PS1='[%n@%m %1~]$ '
 PATH="$PATH:$HOME/.local/bin"
 
 ZSH_AUTOSUGGEST_MANUAL_REBIND=1
+ZSH_AUTOSUGGEST_STRATEGY=(history completion)
+ZSH_AUTOSUGGEST_HISTORY_IGNORE="(cd *)"
 
 source $ZDOTDIR/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 source $ZDOTDIR/zsh-autosuggestions/zsh-autosuggestions.zsh

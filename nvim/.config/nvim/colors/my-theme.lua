@@ -356,8 +356,8 @@ local function get_groups()
       NvimTreeEndOfBuffer = endOfBuffer,
 
       -- NeoTree
-      NeoTreeNormal = { fg = PALETTE.fg, bg = PALETTE.menu, },
-      NeoTreeNormalNC = { fg = PALETTE.fg, bg = PALETTE.menu, },
+      NeoTreeNormal = { fg = PALETTE.fg, bg = PALETTE.bg, },
+      NeoTreeNormalNC = { fg = PALETTE.fg, bg = PALETTE.bg, },
       NeoTreeDirectoryName = { fg = PALETTE.fg },
       NeoTreeGitUnstaged = { fg = PALETTE.bright_magenta },
       NeoTreeGitModified = { fg = PALETTE.bright_magenta },

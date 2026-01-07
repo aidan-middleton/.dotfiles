@@ -20,16 +20,16 @@ vim.opt.foldenable = false
 vim.g.mapleader = " "
 
 -- Copy to clipboard
-vim.keymap.set("v", "<leader>y", '"+y', { noremap = true, silent = true })        -- Visual selection
-vim.keymap.set("n", "<leader>Y", '"+yg_', { noremap = true, silent = true })      -- From cursor to end of line
-vim.keymap.set("n", "<leader>y", '"+y', { noremap = true, silent = true })        -- Normal mode
-vim.keymap.set("n", "<leader>yy", '"+yy', { noremap = true, silent = true })      -- Yank entire line
+vim.keymap.set("v", "<leader>y", '"+y', { noremap = true, silent = true, desc = "Copy visual selection to clipboard" })
+vim.keymap.set("n", "<leader>Y", '"+yg_', { noremap = true, silent = true, desc = "Copy from cursor to end of line to clipboard" })
+vim.keymap.set("n", "<leader>y", '"+y', { noremap = true, silent = true, desc = "Copy to clipboard" })
+vim.keymap.set("n", "<leader>yy", '"+yy', { noremap = true, silent = true, desc = "Copy entire line" })
 
 -- Paste from clipboard
-vim.keymap.set("n", "<leader>p", '"+p', { noremap = true, silent = true })        -- After cursor
-vim.keymap.set("n", "<leader>P", '"+P', { noremap = true, silent = true })        -- Before cursor
-vim.keymap.set("v", "<leader>p", '"+p', { noremap = true, silent = true })        -- Replace visual with clipboard
-vim.keymap.set("v", "<leader>P", '"+P', { noremap = true, silent = true })        -- Paste before selection
+vim.keymap.set("n", "<leader>p", '"+p', { noremap = true, silent = true, desc = "Paste after cursor" })
+vim.keymap.set("n", "<leader>P", '"+P', { noremap = true, silent = true, desc = "Paste before cursor" })
+vim.keymap.set("v", "<leader>p", '"+p', { noremap = true, silent = true, desc = "Pate and replace visual selection"})
+vim.keymap.set("v", "<leader>P", '"+P', { noremap = true, silent = true, desc = "Paste before visual selection"})
 
 -- Optional: diagnostics config
 vim.diagnostic.config({
@@ -40,6 +40,22 @@ vim.diagnostic.config({
 
 -- Setup commands
 vim.cmd("colorscheme " .. theme)
+
+-- Format on paste
+vim.api.nvim_create_autocmd("TextChangedP", {
+    callback = function()
+        local start = vim.fn.getpos("'[")
+        local finish = vim.fn.getpos("']")
+
+        vim.lsp.buf.format({
+            range = {
+                ["start"] = { start[2] - 1, start[3] - 1 },
+                ["end"] = { finish[2] - 1, finish[3] },
+            },
+        })
+    end,
+})
+
 
 --
 -- Tab line
@@ -258,7 +274,6 @@ setup_lsp('rust-analyzer', {
             local clients = vim.lsp.get_clients { bufnr = bufnr, name = 'rust_analyzer' }
             for _, client in ipairs(clients) do
                 vim.notify 'Reloading Cargo Workspace'
-                ---@diagnostic disable-next-line:param-type-mismatch
                 client:request('rust-analyzer/reloadWorkspace', nil, function(err)
                     if err then
                         error(tostring(err))
@@ -268,6 +283,19 @@ setup_lsp('rust-analyzer', {
             end
         end, { desc = 'Reload current cargo workspace' })
     end,
+})
+
+-- LANGUAGE: java 
+setup_lsp("jdtls",{
+    cmd = { 'jdtls' },
+    root_markers = { '.git', 'pom.xml', 'build.gradle' },
+    settings = {
+        java = {
+            project = {
+                outputPath = "build/classes"
+            }
+        }
+    },
 })
 
 --
@@ -294,11 +322,11 @@ require("lazy").setup({
                     end,
                 },
                 mapping = cmp.mapping.preset.insert({
-                  ['<C-b>'] = cmp.mapping.scroll_docs(-4),
-                  ['<C-f>'] = cmp.mapping.scroll_docs(4),
-                  ['<C-Space>'] = cmp.mapping.complete(),
-                  ['<C-e>'] = cmp.mapping.abort(),
-                  ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+                      ['<C-b>'] = cmp.mapping.scroll_docs(-4),
+                      ['<C-f>'] = cmp.mapping.scroll_docs(4),
+                      ['<C-Space>'] = cmp.mapping.complete(),
+                      ['<C-e>'] = cmp.mapping.abort(),
+                      ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
                 }),
                 sources = {
                     { name = 'nvim_lsp' },
@@ -335,6 +363,7 @@ require("lazy").setup({
     { "nvim-telescope/telescope.nvim",
         tag = '0.1.8', dependencies = { 'nvim-lua/plenary.nvim' },
         config = function()
+            local telescope = require 'telescope'
             local builtin = require('telescope.builtin')
             vim.keymap.set('n', '<leader>ff', builtin.find_files, { desc = 'Telescope find files' })
             vim.keymap.set('n', '<leader>fg', builtin.live_grep, { desc = 'Telescope live grep' })
@@ -342,10 +371,21 @@ require("lazy").setup({
             vim.keymap.set('n', '<leader>fh', builtin.help_tags, { desc = 'Telescope help tags' })
             vim.keymap.set('n', '<leader>fc', builtin.git_commits, { desc = 'Telescope help tags' })
             vim.keymap.set('n', '<leader>fk', builtin.keymaps, { desc = 'Telescope key maps' })
-            require 'telescope'.setup{
-                defaults = { mappings = { i = { ["<C-h>"] = "which_key" } } }
+            vim.keymap.set('n', '<leader>fa', builtin.commands, { desc = 'Telescope help tags' })
+            vim.keymap.set("n", "<leader>fe", function()
+                telescope.extensions.file_browser.file_browser()
+            end, { desc = 'Telescope file browser'})
+            telescope.setup {
+                defaults = { mappings = { i = { ["<C-h>"] = "which_key" } } },
+                extensions = {
+                    file_browser = { theme = "ivy", hijack_netrw = true },
+                },
             }
+            require 'telescope'.load_extension "file_browser"
         end
+    },
+    { "nvim-telescope/telescope-file-browser.nvim",
+        dependencies = { "nvim-telescope/telescope.nvim", "nvim-lua/plenary.nvim" }
     },
     { "mason-org/mason.nvim",
         config = function()
@@ -354,4 +394,132 @@ require("lazy").setup({
     },
     { "mfussenegger/nvim-dap" },
     { "mfussenegger/nvim-jdtls" },
+    { "nvim-tree/nvim-web-devicons" },
+    { "nvim-neo-tree/neo-tree.nvim",
+        branch = "v3.x",
+        dependencies = {
+            "nvim-lua/plenary.nvim",
+            "MunifTanjim/nui.nvim",
+            "nvim-tree/nvim-web-devicons",
+        },
+        lazy = false,
+        config = function()
+            vim.keymap.set("n", "<leader>e", "<Cmd>Neotree<CR>")
+            require("neo-tree").setup({
+                window = {
+                    position = "float",
+                    width = 80,
+                    height = 20,
+                    popup = {
+                        border = "rounded",
+                    },
+                },
+                default_component_configs = {
+                    indent = {
+                        with_expanders = true,
+                        expander_collapsed = "",
+                        expander_expanded = "",
+                        expander_highlight = "NeoTreeExpander",
+                    },
+                },
+                filesystem = {
+                    scan_mode = "deep",
+                    filtered_items = {
+                        hide_dotfiles = false,
+                        hide_hidden = true,
+                        hide_by_name = {},
+                        hide_by_pattern = {},
+                    },
+                    follow_current_file = true,
+                    group_empty_dirs = true, -- this collapses empty folders visually
+                },
+            })
+        end
+    },
+    { "kdheepak/lazygit.nvim",
+        lazy = true,
+        cmd = {
+            "LazyGit",
+            "LazyGitConfig",
+            "LazyGitCurrentFile",
+            "LazyGitFilter",
+            "LazyGitFilterCurrentFile",
+        },
+        -- optional for floating window border decoration
+        dependencies = { "nvim-lua/plenary.nvim" },
+        -- setting the keybinding for LazyGit with 'keys' is recommended in
+        -- order to load the plugin when the command is run for the first time
+        keys = {
+            { "<leader>lg", "<cmd>LazyGit<cr>", desc = "LazyGit" }
+        }
+    },
+    { "lewis6991/gitsigns.nvim",
+        config = function()
+            require('gitsigns').setup {
+                on_attach = function(bufnr)
+                    local gitsigns = require('gitsigns')
+
+                    local function map(mode, l, r, opts)
+                        opts = opts or {}
+                        opts.buffer = bufnr
+                        vim.keymap.set(mode, l, r, opts)
+                    end
+
+                    -- Navigation
+                    map('n', ']c', function()
+                        if vim.wo.diff then
+                            vim.cmd.normal({ ']c', bang = true })
+                        else
+                            gitsigns.nav_hunk('next')
+                        end
+                    end)
+
+                    map('n', '[c', function()
+                        if vim.wo.diff then
+                            vim.cmd.normal({ '[c', bang = true })
+                        else
+                            gitsigns.nav_hunk('prev')
+                        end
+                    end)
+
+                    -- Actions
+                    map('n', '<leader>hs', gitsigns.stage_hunk)
+                    map('n', '<leader>hr', gitsigns.reset_hunk)
+
+                    map('v', '<leader>hs', function()
+                        gitsigns.stage_hunk({ vim.fn.line('.'), vim.fn.line('v') })
+                    end)
+
+                    map('v', '<leader>hr', function()
+                        gitsigns.reset_hunk({ vim.fn.line('.'), vim.fn.line('v') })
+                    end)
+
+                    map('n', '<leader>hS', gitsigns.stage_buffer)
+                    map('n', '<leader>hR', gitsigns.reset_buffer)
+                    map('n', '<leader>hp', gitsigns.preview_hunk)
+                    map('n', '<leader>hi', gitsigns.preview_hunk_inline)
+
+                    map('n', '<leader>hb', function()
+                        gitsigns.blame_line({ full = true })
+                    end)
+
+                    map('n', '<leader>hd', gitsigns.diffthis)
+
+                    map('n', '<leader>hD', function()
+                        gitsigns.diffthis('~')
+                    end)
+
+                    map('n', '<leader>hQ', function() gitsigns.setqflist('all') end)
+                    map('n', '<leader>hq', gitsigns.setqflist)
+
+                    -- Toggles
+                    map('n', '<leader>tb', gitsigns.toggle_current_line_blame)
+                    map('n', '<leader>tw', gitsigns.toggle_word_diff)
+
+                    -- Text object
+                    map({ 'o', 'x' }, 'ih', gitsigns.select_hunk)
+                end
+            }
+        end
+    }
 })

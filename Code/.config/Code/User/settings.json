@@ -1,0 +1,97 @@
+{
+    "editor.fontFamily": "'ComicCode Nerd Font', 'monospace', monospace",
+    "python.defaultInterpreterPath": "/bin/python",
+    "github.copilot.enable": {
+        "*": false,
+        "plaintext": false,
+        "markdown": false,
+        "scminput": false
+    },
+    "editor.minimap.renderCharacters":false,
+    "workbench.colorCustomizations": {
+        "[Dracula Theme]": {
+            "titleBar.activeBackground": "#000000",
+            "sideBar.background": "#000000",
+            "tab.inactiveBackground": "#000000",
+            "editor.background": "#000000",
+            "editorPane.background": "#000000",
+            "activityBar.background": "#000000",
+            "editorGroupHeader.tabsBackground": "#000000",
+            "tab.activeBackground": "#000000",
+            "panel.background": "#000000",
+            "terminal.background": "#000000",
+            "statusBar.background": "#000000",
+            "breadcrumb.background": "#000000",
+            "commandCenter.background": "#000000",
+            "quickInput.background": "#000000",
+            "widget.border": "#FF79C680",
+            "pickerGroup.border": "#FF79C680",
+            "dropdown.background": "#000000",
+            "editorGroupHeader.tabsBorder": "#191A21",
+            "editorWidget.background": "#000000", 
+        }
+    },
+    "workbench.colorTheme": "Dracula Theme",
+    "editor.fontSize": 20,
+    "editor.rulers": [
+        80,
+        120
+    ],
+    "workbench.activityBar.location": "hidden",
+    "editor.colorDecorators": false,
+    "editor.bracketPairColorization.enabled": false,
+    "window.menuBarVisibility": "hidden",
+    "window.menuStyle": "custom",
+    "window.titleBarStyle": "native",
+    "extensions.ignoreRecommendations": true,
+    "terminal.integrated.fontSize": 20,
+    "workbench.startupEditor": "none",
+    "editor.stickyScroll.defaultModel": "indentationModel",
+    "window.commandCenter": false,
+    "workbench.layoutControl.enabled": false,
+    "chat.commandCenter.enabled": false,
+    "window.customTitleBarVisibility": "never",
+    "explorer.autoReveal": false,
+    "editor.inlayHints.enabled": "offUnlessPressed",
+    "diffEditor.hideUnchangedRegions.enabled": true,
+    "files.autoSave": "afterDelay",
+    "editor.suggest.showStatusBar": true,
+    "[cpp]": {
+
+        "editor.wordBasedSuggestions": "off",
+        "editor.semanticHighlighting.enabled": true,
+        "editor.stickyScroll.defaultModel": "foldingProviderModel",
+        "editor.suggest.insertMode": "replace"
+    },
+    "C_Cpp.default.cppStandard": "c++17",
+    "workbench.panel.showLabels": false,
+    "[python]": {
+        "diffEditor.ignoreTrimWhitespace": false,
+        "editor.defaultColorDecorators": "never",
+        "editor.formatOnType": true,
+        "editor.wordBasedSuggestions": "off"
+    },
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": "explicit"
+    },
+    "editor.minimap.showSlider": "always",
+    "editor.minimap.autohide": true,
+    "workbench.tree.indent": 40,
+    "window.zoomLevel": 1,
+    "workbench.editor.enablePreview": false,
+    "editor.rename.enablePreview": false,
+    
+    // Disable wildcard imports
+    "java.imports.starThreshold": 9999,
+    "java.imports.staticStarThreshold": 9999,
+
+    // Import order: normal imports first, static imports last
+    "java.completion.importOrder": [
+        "java",
+        "javax",
+        "org",
+        "com",
+        "#"
+    ],
+
+}

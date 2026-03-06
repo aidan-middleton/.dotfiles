@@ -1,36 +1,54 @@
 #
 # ~/.zshrc
 #
+
+# UI
 export GTK_THEME=Dracula:dark
 export QT_QPA_PLATFORMTHEME=qt5ct
 # export QT_STYLE_OVERRIDE=Dracula
 # export QT_QPA_PLATFORM=xcb
+
+# XDG Base user directory
 export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_CACHE_HOME="$HOME/.cache"
 export XDG_DATA_HOME="$HOME/.local/share"
 export XDG_DATA_DIRS="$XDG_DATA_DIRS:/var/lib/flatpak/exports/share:/home/aidan/.local/share/flatpak/exports/share"
 export XDG_STATE_HOME="$HOME/.local/state"
+
+# Fixes for those who refuse to listen to the specification
+alias mvn="mvn -gs $XDG_CONFIG_HOME/maven/settings.xml" 
+alias wget="wget --hsts-file=$XDG_DATA_HOME/wget-hsts" 
+export _JAVA_OPTIONS="-Djava.util.prefs.userRoot=${XDG_CONFIG_HOME}/java -Djavafx.cachedir=${XDG_CACHE_HOME}/openjfx"
 export CARGO_HOME="$XDG_DATA_HOME"/cargo 
 export CUDA_CACHE_PATH="$XDG_CACHE_HOME"/nv
+export DOTNET_CLI_HOME="$XDG_DATA_HOME"/dotnet
 export GNUPGHOME="$XDG_DATA_HOME"/gnupg
-export NPM_CONFIG_INIT_MODULE="$XDG_CONFIG_HOME"/npm/config/npm-init.js       
+export GRADLE_USER_HOME="$XDG_DATA_HOME"/gradle 
+export MINETEST_USER_PATH="$XDG_DATA_HOME"/minetes
+export NODE_REPL_HISTORY="$XDG_STATE_HOME"/node_repl_historyi
 export NPM_CONFIG_CACHE="$XDG_CACHE_HOME"/npm                                 
+export NPM_CONFIG_INIT_MODULE="$XDG_CONFIG_HOME"/npm/config/npm-init.js       
 export NPM_CONFIG_TMP="$XDG_RUNTIME_DIR"/npm
+export PARALLEL_HOME="$XDG_CONFIG_HOME"/parallel
 export PYTHONSTARTUP="$XDG_CONFIG_HOME"/python/pythonrc
+export RUSTUP_HOME="$XDG_DATA_HOME"/rustup
 export STACK_ROOT="$XDG_DATA_HOME"/stack
 export STACK_XDG=1
 export WINEPREFIX="$XDG_DATA_HOME"/wine
-export NODE_REPL_HISTORY="$XDG_STATE_HOME"/node_repl_historyi
 
+# Handle history
 export HISTFILE=~/.history
 export HISTSIZE=10000
 export SAVEHIST=10000
 setopt appendhistory
 
-export PYENV_ROOT="$HOME/.pyenv"
+# Python stuff
+export PYENV_ROOT="$XDG_DATA_HOME"/pyenv 
 export PATH="$PYENV_ROOT/bin:$PATH"
 eval "$(pyenv init --path)"
 eval "$(pyenv init -)"
+
+# export PATH="$CARGO_HOME/bin:$PATH"
 
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return

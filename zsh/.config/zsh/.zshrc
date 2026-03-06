@@ -133,19 +133,31 @@ fi
 # PROMPT
 setopt PROMPT_SUBST
 autoload -Uz vcs_info
-precmd() { 
-    vcs_info 
+precmd() {
+    vcs_info
 
     if [[ -n $vcs_info_msg_0_ ]]; then
+        # Detect repo status
         if ! git diff --quiet 2>/dev/null; then
-            GIT_COLOR="%F{red}"       # unstaged changes
+            GIT_COLOR="%F{red}"        # unstaged
         elif ! git diff --cached --quiet 2>/dev/null; then
-            GIT_COLOR="%F{green}"    # staged changes
+            GIT_COLOR="%F{green}"      # staged
         else
-            GIT_COLOR="%F{white}"     # clean
+            GIT_COLOR="%F{white}"      # clean
         fi
 
-        GIT_BRANCH=" ${GIT_COLOR} ${vcs_info_msg_0_}%f"
+        # Ahead / Behind calculation
+        AHEAD=""
+        BEHIND=""
+
+        if git rev-parse --abbrev-ref @{upstream} &>/dev/null; then
+            read AHEAD_COUNT BEHIND_COUNT <<< $(git rev-list --left-right --count HEAD...@{upstream})
+
+            [[ $AHEAD_COUNT -gt 0 ]] && AHEAD="⇡${AHEAD_COUNT}"
+            [[ $BEHIND_COUNT -gt 0 ]] && BEHIND="⇣${BEHIND_COUNT}"
+        fi
+
+        GIT_BRANCH=" ${AHEAD}${BEHIND} ${GIT_COLOR}${vcs_info_msg_0_}%f"
     else
         GIT_BRANCH=""
     fi

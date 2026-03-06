@@ -133,12 +133,25 @@ fi
 # PROMPT
 setopt PROMPT_SUBST
 autoload -Uz vcs_info
-precmd() { vcs_info }
-zstyle ':vcs_info:git:*' check-for-changes true
-zstyle ':vcs_info:git:*' stagedstr '+'
-zstyle ':vcs_info:git:*' unstagedstr '*'
-zstyle ':vcs_info:git:*' formats ' %F{cyan} %b%u%c%f'
-export PS1='[%F{magenta}%1~%f${vcs_info_msg_0_}]$ '
+precmd() { 
+    vcs_info 
+
+    if [[ -n $vcs_info_msg_0_ ]]; then
+        if ! git diff --quiet 2>/dev/null; then
+            GIT_COLOR="%F{red}"       # unstaged changes
+        elif ! git diff --cached --quiet 2>/dev/null; then
+            GIT_COLOR="%F{green}"    # staged changes
+        else
+            GIT_COLOR="%F{white}"     # clean
+        fi
+
+        GIT_BRANCH=" ${GIT_COLOR} ${vcs_info_msg_0_}%f"
+    else
+        GIT_BRANCH=""
+    fi
+}
+zstyle ':vcs_info:git:*' formats '%b'
+export PS1='[%1~${GIT_BRANCH}]$ '
 
 
 # PLUGINS

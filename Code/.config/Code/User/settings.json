@@ -75,7 +75,7 @@
         "source.organizeImports": "explicit"
     },
     "editor.minimap.showSlider": "always",
-    "editor.minimap.autohide": true,
+    "editor.minimap.autohide": "mouseover",
     "workbench.tree.indent": 40,
     "window.zoomLevel": 1,
     "workbench.editor.enablePreview": false,

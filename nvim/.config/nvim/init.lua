@@ -1,7 +1,7 @@
 -- ~/.config/nvim/init.lua
 
 -- custom variables
-local theme = "my-theme"
+local theme = "blackula"
 
 -- vim options
 vim.opt.number = true

@@ -15,6 +15,8 @@ export XDG_DATA_HOME="$HOME/.local/share"
 export XDG_DATA_DIRS="$XDG_DATA_DIRS:/var/lib/flatpak/exports/share:/home/aidan/.local/share/flatpak/exports/share"
 export XDG_STATE_HOME="$HOME/.local/state"
 
+PATH="$PATH:$HOME/.local/bin"
+
 # Fixes for those who refuse to listen to the specification
 alias mvn="mvn -gs $XDG_CONFIG_HOME/maven/settings.xml" 
 alias wget="wget --hsts-file=$XDG_DATA_HOME/wget-hsts" 
@@ -91,6 +93,7 @@ restart_wireplumber() {
     echo "WirePlumber state cleared and service restarted."
 }
 
+# KEYMAP
 # create a zkbd compatible hash; to add other keys to this hash, see: man 5 terminfo
 typeset -g -A key
 key[Home]="${terminfo[khome]}"
@@ -127,10 +130,18 @@ if (( ${+terminfo[smkx]} && ${+terminfo[rmkx]} )); then
 	add-zle-hook-widget -Uz zle-line-finish zle_application_mode_stop
 fi
 
-export PS1='[%n@%m %1~]$ '
+# PROMPT
+setopt PROMPT_SUBST
+autoload -Uz vcs_info
+precmd() { vcs_info }
+zstyle ':vcs_info:git:*' check-for-changes true
+zstyle ':vcs_info:git:*' stagedstr '+'
+zstyle ':vcs_info:git:*' unstagedstr '*'
+zstyle ':vcs_info:git:*' formats ' %F{cyan} %b%u%c%f'
+export PS1='[%F{magenta}%1~%f${vcs_info_msg_0_}]$ '
 
-PATH="$PATH:$HOME/.local/bin"
 
+# PLUGINS
 ZSH_AUTOSUGGEST_MANUAL_REBIND=1
 ZSH_AUTOSUGGEST_STRATEGY=(history completion)
 ZSH_AUTOSUGGEST_HISTORY_IGNORE="(cd *)"

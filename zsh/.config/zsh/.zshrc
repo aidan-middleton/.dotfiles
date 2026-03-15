@@ -165,6 +165,8 @@ precmd() {
 zstyle ':vcs_info:git:*' formats '%b'
 export PS1='[%1~${GIT_BRANCH}]$ '
 
+# COW SAY
+fortune futurama | cowsay -f bender
 
 # PLUGINS
 ZSH_AUTOSUGGEST_MANUAL_REBIND=1

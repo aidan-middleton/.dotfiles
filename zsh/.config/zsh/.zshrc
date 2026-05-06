@@ -68,6 +68,7 @@ alias vinv="${EDITOR} ${XDG_CONFIG_HOME}/nvim/init.lua"
 alias viranger="${EDITOR} ${XDG_CONFIG_HOME}/ranger/rc.conf"
 alias vizsh="${EDITOR} ${XDG_CONFIG_HOME}/zsh/.zshrc && source ${XDG_CONFIG_HOME}/zsh/.zshrc"
 alias grep='grep --color=auto'
+alias vcreate="python -m venv venv"
 alias vactivate='source venv/bin/activate'
 alias superclear="printf '\033[2J\033[3J\033[1;1H'"
 

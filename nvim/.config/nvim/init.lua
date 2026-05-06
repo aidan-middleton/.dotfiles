@@ -31,9 +31,14 @@ vim.keymap.set("n", "<leader>P", '"+P', { noremap = true, silent = true, desc = 
 vim.keymap.set("v", "<leader>p", '"+p', { noremap = true, silent = true, desc = "Pate and replace visual selection"})
 vim.keymap.set("v", "<leader>P", '"+P', { noremap = true, silent = true, desc = "Paste before visual selection"})
 
+-- Diagnostic bindings
+vim.keymap.set('n', '<Leader>dd', ':lua vim.diagnostic.open_float()<CR>', { noremap = true, silent = true, desc = "Show all diagnostics on current line in floating window" })
+vim.keymap.set('n', '<Leader>dn', ':lua vim.diagnostic.goto_next()<CR>', { noremap = true, silent = true, desc = "Go to next diagnostic" })
+vim.keymap.set('n', '<Leader>dp', ':lua vim.diagnostic.goto_prev()<CR>', { noremap = true, silent = true, desc = "Go to previous diagnostic" })
+
 -- Optional: diagnostics config
 vim.diagnostic.config({
-    virtual_text = true,
+    virtual_text = false,
     signs = true,
     underline = true,
 })
@@ -151,20 +156,20 @@ setup_lsp('clangd', {
 setup_lsp('codelld')
 
 -- LANGUAGE: Go
-setup_lsp('gopls', {
-    cmd = {"gopls"},  -- optional if gopls is in PATH
-    settings = {
-        gopls = {
-            analyses = {
-                unusedparams = true,
-                nilness = true,
-                shadow = true,
-            },
-            staticcheck = true,
-            gofumpt = true,  -- strict formatting
-        },
-    },
-})
+-- setup_lsp('gopls', {
+--    cmd = {"gopls"},  -- optional if gopls is in PATH
+--    settings = {
+--        gopls = {
+--            analyses = {
+--                unusedparams = true,
+--                nilness = true,
+--                shadow = true,
+--            },
+--            staticcheck = true,
+--            gofumpt = true,  -- strict formatting
+--        },
+--    },
+--})
 
 -- LANGUAGE: Rust
 

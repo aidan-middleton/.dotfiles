@@ -52,6 +52,8 @@ eval "$(pyenv init -)"
 
 # export PATH="$CARGO_HOME/bin:$PATH"
 
+export JAVA_HOME=/usr/lib/jvm/default
+
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 

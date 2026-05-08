@@ -135,6 +135,10 @@ setup_lsp('lua_ls', {
   settings = {Lua = {}}
 })
 
+
+-- LANGAUGE: Bash
+setup_lsp('bashls')
+
 -- LANGAUGE: Python
 setup_lsp('pyright')
 
@@ -347,20 +351,6 @@ require("lazy").setup({
     { "hrsh7th/cmp-nvim-lsp" }, -- LSP source for nvim-cmp
     { "L3MON4D3/LuaSnip" }, -- Snippet engine
     { "saadparwaiz1/cmp_luasnip" }, -- Snippet completions
-    { "nvim-treesitter/nvim-treesitter",
-        branch = 'master', lazy = false, build = ":TSUpdate",
-        config = function()
-            require 'nvim-treesitter.configs'.setup{
-                ensure_installed = { "c", "cpp", "lua", "vim", "vimdoc", "query", "markdown", "markdown_inline", "python", "javascript" },
-                sync_install = false,
-                auto_install = true,
-                highlight = {
-                    enable = true,
-                    additional_vim_regex_highlighting = false,
-                },
-            }
-        end
-    },
     { "norcalli/nvim-colorizer.lua",
         config = function()
             require 'colorizer'.setup {

@@ -34,17 +34,19 @@ export NPM_CONFIG_TMP="$XDG_RUNTIME_DIR"/npm
 export PARALLEL_HOME="$XDG_CONFIG_HOME"/parallel
 export PYTHONSTARTUP="$XDG_CONFIG_HOME"/python/pythonrc
 export RUSTUP_HOME="$XDG_DATA_HOME"/rustup
+export SQLITE_HISTORY="$XDG_CACHE_HOME"/sqlite_history
 export STACK_ROOT="$XDG_DATA_HOME"/stack
 export STACK_XDG=1
 export WINEPREFIX="$XDG_DATA_HOME"/wine
 
 # Handle history
 export HISTFILE=~/.history
-export HISTSIZE=10000
-export SAVEHIST=10000
+export HISTSIZE=100000
+export SAVEHIST=100000
 setopt appendhistory
 
 # Python stuff
+export PYTHONSTARTUP="$XDG_CONFIG_HOME"/python/pythonrc
 export PYENV_ROOT="$XDG_DATA_HOME"/pyenv 
 export PATH="$PYENV_ROOT/bin:$PATH"
 eval "$(pyenv init --path)"

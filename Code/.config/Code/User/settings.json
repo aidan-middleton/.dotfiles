@@ -1,90 +1,47 @@
 {
-    "editor.fontFamily": "'ComicCode Nerd Font', 'monospace', monospace",
-    "python.defaultInterpreterPath": "/bin/python",
-    "github.copilot.enable": {
-        "*": false,
-        "plaintext": false,
-        "markdown": false,
-        "scminput": false
-    },
-    "editor.minimap.renderCharacters":false,
-    "workbench.colorCustomizations": {
-        "[Dracula Theme]": {
-            "titleBar.activeBackground": "#000000",
-            "sideBar.background": "#000000",
-            "tab.inactiveBackground": "#000000",
-            "editor.background": "#000000",
-            "editorPane.background": "#000000",
-            "activityBar.background": "#000000",
-            "editorGroupHeader.tabsBackground": "#000000",
-            "tab.activeBackground": "#000000",
-            "panel.background": "#000000",
-            "terminal.background": "#000000",
-            "statusBar.background": "#000000",
-            "breadcrumb.background": "#000000",
-            "commandCenter.background": "#000000",
-            "quickInput.background": "#000000",
-            "widget.border": "#FF79C680",
-            "pickerGroup.border": "#FF79C680",
-            "dropdown.background": "#000000",
-            "editorGroupHeader.tabsBorder": "#191A21",
-            "editorWidget.background": "#000000", 
-        }
-    },
-    "workbench.colorTheme": "Dracula Theme",
-    "editor.fontSize": 20,
-    "editor.rulers": [
-        80,
-        120
-    ],
-    "workbench.activityBar.location": "hidden",
-    "editor.colorDecorators": false,
-    "editor.bracketPairColorization.enabled": false,
-    "window.menuBarVisibility": "hidden",
-    "window.menuStyle": "custom",
-    "window.titleBarStyle": "native",
-    "extensions.ignoreRecommendations": true,
-    "terminal.integrated.fontSize": 20,
-    "workbench.startupEditor": "none",
-    "editor.stickyScroll.defaultModel": "indentationModel",
-    "window.commandCenter": false,
-    "workbench.layoutControl.enabled": false,
-    "chat.commandCenter.enabled": false,
-    "window.customTitleBarVisibility": "never",
-    "explorer.autoReveal": false,
-    "editor.inlayHints.enabled": "offUnlessPressed",
-    "diffEditor.hideUnchangedRegions.enabled": true,
-    "files.autoSave": "afterDelay",
-    "editor.suggest.showStatusBar": true,
     "[cpp]": {
-
-        "editor.wordBasedSuggestions": "off",
         "editor.semanticHighlighting.enabled": true,
         "editor.stickyScroll.defaultModel": "foldingProviderModel",
-        "editor.suggest.insertMode": "replace"
+        "editor.suggest.insertMode": "replace",
+        "editor.wordBasedSuggestions": "off"
     },
-    "C_Cpp.default.cppStandard": "c++17",
-    "workbench.panel.showLabels": false,
     "[python]": {
         "diffEditor.ignoreTrimWhitespace": false,
         "editor.defaultColorDecorators": "never",
         "editor.formatOnType": true,
         "editor.wordBasedSuggestions": "off"
     },
+    "C_Cpp.default.cppStandard": "c++17",
+    "chat.commandCenter.enabled": false,
+    "chat.disableAIFeatures": true,
+    "diffEditor.hideUnchangedRegions.enabled": true,
+    "editor.bracketPairColorization.enabled": false,
     "editor.codeActionsOnSave": {
         "source.organizeImports": "explicit"
     },
-    "editor.minimap.showSlider": "always",
+    "editor.colorDecorators": false,
+    "editor.fontFamily": "'ComicCode Nerd Font', 'monospace', monospace",
+    "editor.fontSize": 20,
+    "editor.inlayHints.enabled": "offUnlessPressed",
     "editor.minimap.autohide": "mouseover",
-    "workbench.tree.indent": 40,
-    "window.zoomLevel": 1,
-    "workbench.editor.enablePreview": false,
+    "editor.minimap.renderCharacters": false,
+    "editor.minimap.showSlider": "always",
     "editor.rename.enablePreview": false,
-    
-    // Disable wildcard imports
-    "java.imports.starThreshold": 9999,
-    "java.imports.staticStarThreshold": 9999,
-
+    "editor.rulers": [
+        80,
+        120
+    ],
+    "editor.stickyScroll.defaultModel": "indentationModel",
+    "editor.suggest.showStatusBar": true,
+    "explorer.autoReveal": false,
+    "extensions.ignoreRecommendations": true,
+    "files.autoSave": "afterDelay",
+    "github.copilot.enable": {
+        "*": false,
+        "markdown": false,
+        "plaintext": false,
+        "scminput": false
+    },
     // Import order: normal imports first, static imports last
     "java.completion.importOrder": [
         "java",
@@ -93,5 +50,47 @@
         "com",
         "#"
     ],
-
+    // Disable wildcard imports
+    "java.imports.starThreshold": 9999,
+    "java.imports.staticStarThreshold": 9999,
+    "python.defaultInterpreterPath": "/bin/python",
+    "terminal.integrated.fontSize": 20,
+    "window.commandCenter": false,
+    "window.customTitleBarVisibility": "never",
+    "window.menuBarVisibility": "hidden",
+    "window.menuStyle": "custom",
+    "window.titleBarStyle": "native",
+    "window.zoomLevel": 1,
+    "workbench.colorCustomizations": {
+        "[Dracula Theme]": {
+            "activityBar.background": "#000000",
+            "breadcrumb.background": "#000000",
+            "commandCenter.background": "#000000",
+            "dropdown.background": "#000000",
+            "editor.background": "#000000",
+            "editorGroupHeader.tabsBackground": "#000000",
+            "editorGroupHeader.tabsBorder": "#191A21",
+            "editorPane.background": "#000000",
+            "editorWidget.background": "#000000",
+            "panel.background": "#000000",
+            "pickerGroup.border": "#FF79C680",
+            "quickInput.background": "#000000",
+            "sideBar.background": "#000000",
+            "sideBar.border": "#FF79C680",
+            "statusBar.background": "#000000",
+            "tab.activeBackground": "#000000",
+            "tab.inactiveBackground": "#000000",
+            "terminal.background": "#000000",
+            "titleBar.activeBackground": "#000000",
+            "widget.border": "#FF79C680"
+        }
+    },
+    "workbench.colorTheme": "Dracula Theme",
+    "workbench.editor.enablePreview": false,
+    "workbench.layoutControl.enabled": false,
+    "workbench.panel.showLabels": false,
+    "workbench.startupEditor": "none",
+    "workbench.tree.indent": 16,
+    "workbench.activityBar.compact": true,
+    "workbench.iconTheme": "flow-deep"
 }

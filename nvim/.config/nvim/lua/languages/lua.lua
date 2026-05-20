@@ -1,5 +1,5 @@
 -- ~/.config/nvim/lua/lsp/lua.lua
-local setup_lsp = require('lsp.lua').setup_lsp
+local setup_lsp = require('languages.__utils').setup_lsp
 
 setup_lsp('lua_ls', {
     on_init = function(client)

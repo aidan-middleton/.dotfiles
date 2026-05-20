@@ -10,3 +10,5 @@ local function setup_lsp(name, configs)
     end
     vim.lsp.enable(name)
 end
+
+return { setup_lsp = setup_lsp }

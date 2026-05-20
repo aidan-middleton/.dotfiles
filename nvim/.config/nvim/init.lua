@@ -16,6 +16,8 @@ vim.opt.foldmethod = 'indent'
 vim.opt.foldlevel = 99
 vim.opt.foldenable = false
 
+vim.o.ttimeoutlen = 750
+
 -- Set space as leader key (optional, if not already set)
 vim.g.mapleader = " "
 

@@ -21,7 +21,7 @@
 
 (defwidget workspace [id name monitor active clients] 
   (button :class { "workspace" + " " + (active ? "active" : "inactive") + " " + "ws" + monitor }
-          :onclick { "hyprctl dispatch workspace " + id}
+          :onclick { "hyprctl dispatch 'hl.dsp.focus({ workspace = " + id + " })'"}
     (box :orientation "h" 
          :space-evenly false 
          :spacing 5

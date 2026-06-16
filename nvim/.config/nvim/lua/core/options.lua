@@ -22,18 +22,3 @@ vim.diagnostic.config({
 
 -- Setup commands
 vim.cmd('colorscheme blackula')
-
--- Format on paste
-vim.api.nvim_create_autocmd("TextChangedP", {
-    callback = function()
-        local start = vim.fn.getpos("'[")
-        local finish = vim.fn.getpos("']")
-
-        vim.lsp.buf.format({
-            range = {
-                ["start"] = { start[2] - 1, start[3] - 1 },
-                ["end"] = { finish[2] - 1, finish[3] },
-            },
-        })
-    end,
-})

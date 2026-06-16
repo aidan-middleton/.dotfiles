@@ -92,5 +92,13 @@
     "workbench.startupEditor": "none",
     "workbench.tree.indent": 16,
     "workbench.activityBar.compact": true,
-    "workbench.iconTheme": "flow-deep"
+    "workbench.iconTheme": "flow-deep",
+    "[javascript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "prettier.tabWidth": 4,
+    "[html]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "prettier.printWidth": 120
 }

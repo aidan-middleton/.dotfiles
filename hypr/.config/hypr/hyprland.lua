@@ -210,6 +210,36 @@ hl.config({
     },
 })
 
+-- Tab group / groupbar colors (Dracula palette to match the GTK theme)
+-- See https://wiki.hypr.land/Configuring/Variables/#group
+hl.config({
+    group = {
+        -- Window border colors while grouped
+        col = {
+            border_active          = "rgba(bd93f9ff)", -- purple
+            border_inactive        = "rgba(44475aff)", -- current line
+            border_locked_active   = "rgba(ff79c6ff)", -- pink
+            border_locked_inactive = "rgba(6272a4ff)", -- comment
+        },
+
+        groupbar = {
+            enabled        = true,
+            font_size      = 10,
+            gradients      = true,
+            height         = 14,
+            text_color     = "rgba(f8f8f2ff)", -- foreground
+
+            -- Tab colors
+            col = {
+                active          = "rgba(bd93f9ff)", -- purple
+                inactive        = "rgba(282a36ff)", -- background
+                locked_active   = "rgba(ff79c6ff)", -- pink
+                locked_inactive = "rgba(6272a4ff)", -- comment
+            },
+        },
+    },
+})
+
 ----------------
 ----  MISC  ----
 ----------------
@@ -449,6 +479,22 @@ hl.window_rule({
     tile  = true,
 })
 
+hl.window_rule({
+    match = {
+        title = "^$",
+        class = "^steam",
+    },
+    stay_focused = true,
+})
+
+hl.window_rule({
+    match = {
+        title = "^$",
+        class = "^steam",
+    },
+    min_size = "1 1",
+})
+
 -- File chooser
 hl.window_rule({
     name  = "windowrule-termfilechooser",
@@ -586,3 +632,5 @@ hl.window_rule({
     float = false,
     tile  = true,
 })
+
+

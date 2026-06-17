@@ -1,13 +1,320 @@
 #!/usr/bin/env python3
-
+import dataclasses
+from dataclasses import dataclass, field, fields, Field
+from enum import Enum
 import json
 import os
 import re
 import socket
 import subprocess
+from typing import Annotated, Generic, get_type_hints, get_args, get_origin, Any, overload, Union
+from collections.abc import Callable
+
+def parse_locale(locale: str) -> tuple[str, str, str, str]:
+    lang_country_encoding, _, modifier = locale.partition('@')
+    lang_country, _, encoding = lang_country_encoding.partition('.')
+    lang, _, country = lang_country.partition('_')
+    return lang, country, encoding, modifier
+
+LOCALE = os.environ.get('LC_ALL') or os.environ.get('LC_MESSAGES') or os.environ.get('LANG') or ''
+LANGUAGE, COUNTRY, ENCODING, MODIFIER = parse_locale(LOCALE)
+
+
+XDG_DATA_DIRS: list[str] = [
+        os.environ['XDG_DATA_HOME'] or "~/.local/share",
+        *(os.environ['XDG_DATA_DIRS'] or "/usr/local/share/:/usr/share/").split(':')
+]
+
+ICON_DIRS = [
+        "~/.icons",
+        *[ f"{dir}/icons" for dir in XDG_DATA_DIRS ],
+        "/usr/share/pixmaps",
+]
+
+@dataclass(frozen=True)
+class EntryKey:
+    name: str
+    localized: bool = False
+
+@dataclass(frozen=True)
+class EntryValue:
+    key: EntryKey
+    locale: str
+    value: object
+
+@dataclass(frozen=True)
+class Localized[T]:
+    localizations: dict[str, T] = field(default_factory=dict)
+    pass
+
+@dataclass(frozen=True)
+class DesktopEntry:
+    Type: str | None = "Application"
+    """
+    This specification defines 3 types of desktop entries: 
+        1. Application
+        2. Link
+        3. Directory
+
+    To allow the addition of new types in the future, implementations should 
+    ignore desktop entries with an unknown type. 
+    """ 
+
+    Version: str | None = None
+    """
+    Version of the Desktop Entry Specification that the desktop entry conforms 
+    with. Entries that confirm with this version of the specification should 
+    use 1.5. 
+
+    Note that the version field is not required to be present. 
+    """
+
+    Name: Localized[str] | None = Localized()
+    """
+    Specific name of the application, for example "Mozilla". 
+    """
+
+    GenericName: Localized[str] | None = None
+    """
+    Generic name of the application, for example "Web Browser". 
+    """
+
+    NoDisplay: bool | None = None
+    """
+    NoDisplay means "this application exists, but don't display it in the menus". 
+    This can be useful to e.g. associate this application with MIME types, so 
+    that it gets launched from a file manager (or other apps), without having 
+    a menu entry for it (there are tons of good reasons for this, including 
+    e.g. the netscape -remote, or kfmclient openURL kind of stuff). 
+    """
+
+    Comment: Localized[str] | None = None
+    """
+    Tooltip for the entry, for example "View sites on the Internet". The value 
+    should not be redundant with the values of Name and GenericName. 
+    """
+
+    Icon: str | None = None
+    """
+    Icon to display in file manager, menus, etc. If the name is an absolute 
+    path, the given file will be used. If the name is not an absolute path, the
+    algorithm described in the Icon Theme Specification will be used to locate 
+    the icon. 
+    """
+
+    Hidden: bool | None = None
+    """
+    Hidden should have been called Deleted. It means the user deleted (at their
+    level) something that was present (at an upper level, e.g. in the system 
+    dirs). It's strictly equivalent to the .desktop file not existing at all, 
+    as far as that user is concerned. This can also be used to "uninstall" 
+    existing files (e.g. due to a renaming) - by letting make install install a 
+    file with Hidden=true in it. 
+    """
+
+    OnlyShowIn: list[str] | None = None
+    NotShowIn: list[str] | None = None
+    """
+    A list of strings identifying the desktop environments that should display/not 
+    display a given desktop entry. By default, a desktop file should be shown, 
+    unless an OnlyShowIn key is present, in which case, the default is for the 
+    file not to be shown.  
+
+    If $XDG_CURRENT_DESKTOP is set then it contains a colon-separated list of 
+    strings. In order, each string is considered. 
+    If a matching entry is found in OnlyShowIn then the desktop file is shown. 
+    If an entry is found in NotShowIn then the desktop file is not shown. 
+    If none of the strings match then the default action is taken (as above). 
+    
+    $XDG_CURRENT_DESKTOP should have been set by the login manager, according 
+    to the value of the DesktopNames found in the session file. 
+    The entry in the session file has multiple values separated in 
+    the usual way: with a semicolon.
+
+    The same desktop name may not appear in both OnlyShowIn and NotShowIn of a group.
+    """
+
+    DBusActivatable: bool | None = None
+    """
+    A bool value specifying if D-Bus activation is supported for this application. 
+    If this key is missing, the default value is false. 
+    If the value is true then implementations should ignore the Exec key and 
+    send a D-Bus message to launch the application. 
+    See D-Bus Activation for more information on how this works.
+
+    Applications should still include Exec= lines in their desktop files for 
+    compatibility with implementations that do not understand the DBusActivatable key. 
+    """ 
+
+    TryExec: str | None = None
+    """
+    Path to an executable file on disk used to determine if the program is actually
+    installed. If the path is not an absolute path, the file is looked up in the
+    $PATH environment variable. If the file is not present or if it is not
+    executable, the entry may be ignored (not be used in menus, for example).
+    """
+
+    Exec: str | None = None
+    """
+    Program to execute, possibly with arguments. See the Exec key for details on how
+    this key works. The Exec key is required if DBusActivatable is not set to true.
+    Even if DBusActivatable is true, Exec should be specified for compatibility with
+    implementations that do not understand DBusActivatable. 
+    """
+
+    Path: str | None = None
+    """
+    If entry is of type Application, the working directory to run the program in.
+
+    """
+
+    Terminal: bool | None = None
+    """
+    Whether the program runs in a terminal window. 
+    """
+
+    Actions: list[str] | None = None
+    """
+    Identifiers for application actions. This can be used to tell the application to
+    make a specific action, different from the default behavior. The Application
+    actions section describes how actions work. 
+    """
+
+    MimeType: list[str] | None = None
+    """
+    The MIME types supported by this application. 
+    """
+
+    Categories: list[str] | None = None
+    """
+    Categories in which the entry should be shown in a menu (for possible values see
+    the Desktop Menu Specification). 
+    """
+
+    Implements: list[str] | None = None
+    """
+    A list of interfaces that this application implements. By default, a desktop
+    file implements no interfaces. See Interfaces for more information on how this
+    works. 
+    """ 
+
+    Keywords: Localized[list[str]] | None = None
+    """
+    a list of strings which may be used in addition to other metadata to describe
+    this entry. This can be useful e.g. to facilitate searching through entries. The
+    values are not meant for display, and should not be redundant with the values of
+    Name or GenericName. 
+    """
+
+    StartupNotify: bool | None = None
+    """
+    If true, it is KNOWN that the application will send a "remove" message when
+    started with the DESKTOP_STARTUP_ID environment variable set. If false, it is
+    KNOWN that the application does not work with startup notification at all (does
+    not shown any window, breaks even when using StartupWMClass, etc.). If absent, a
+    reasonable handling is up to implementations (assuming false, using StartupWMClass,
+    etc.). (See the Startup Notification Protocol Specification for more details).
+
+    """
+
+    StartupWMClass: str | None = None
+    """
+    If specified, it is known that the application will map at least one window with
+    the given string as its WM class or WM name hint (see the Startup Notification
+    Protocol Specification for more details). 
+    """
+
+    URL: str | None = None
+    """
+    If entry is Link type, the URL to access. 
+    """
+
+    PrefersNonDefaultGPU: bool | None = None
+    """
+    If true, the application prefers to be run on a more powerful discrete GPU if
+    available, which we describe as “a GPU other than the default one” in this spec
+    to avoid the need to define what a discrete GPU is and in which cases it might
+    be considered more powerful than the default GPU. This key is only a hint and
+    support might not be present depending on the implementation. 
+    """
+
+    SingleMainWindow: bool | None = None
+    """
+    If true, the application has a single main window, and does not support having
+    an additional one opened. This key is used to signal to the implementation to
+    avoid offering a UI to launch another window of the app. This key is only a hint
+    and support might not be present depending on the implementation. 
+    """
+
+    @classmethod
+    def _partition_entry(cls, entry: str) -> tuple[str, str, str]:
+        lhs, _, raw_value = entry.partition('=')
+        field_name, _, locale = lhs.rstrip(']').partition('[')
+        return field_name, locale, raw_value
+
+    @classmethod
+    def _coerce_helper[T: (list, str, bool)](cls, t: type) -> Callable[[str], T | None]:
+        if t is list:
+            l_coerce = cls._coerce_helper(get_args(f)[0])
+            return lambda v: [l_coerce(v) for v in v.split(';')]
+        elif t is str:
+            return lambda v: v
+        elif t is bool:
+            return lambda v: True if v.lower() == 'true' else False if v.lower() == 'false' else None
+        else:
+            raise ValueError(f"Unsupported type: {t}")
+
+    @overload
+    @classmethod
+    def _coerce_type[I: (list, str, bool)](cls, f: Field[Localized[I] | None], str_value: dict[str, str]) -> Localized[I] | None: ...
+
+    @overload
+    @classmethod
+    def _coerce_type[I: (str, bool)](cls, f: Field[list[I] | None], str_value: str) -> list[I] | None: ...
+
+    @overload
+    @classmethod
+    def _coerce_type(cls, f: Field[str | None], str_value: str) -> str | None: ...
+
+    @overload
+    @classmethod
+    def _coerce_type(cls, f: Field[bool | None], str_value: str) -> int | bool | None: ...
+
+    @classmethod
+    def _coerce_type[R: (Localized, list, str, bool)](cls, f: Field[R | None], str_value: dict[str, str] | str) -> R | None:
+        r_type: type[R | None] = get_args(f)[0]
+        if r_type is Localized:
+            assert isinstance(str_value, dict)
+            i_type = get_args(f)[0]
+            i_coerce = cls._coerce_helper(i_type)
+            return Localized({ locale: i_coerce(value) for locale, value in str_value.items() })
+        assert isinstance(str_value, str)
+        r_coerce: Callable[[str], R | None] = cls._coerce_helper(r_type)
+        return r_coerce(str_value)
+
+    @classmethod
+    def of_str(cls, text: str):
+        kwargs: dict[str, object] = {}
+        hints: dict[str, Field[Any]] = {f.name: f for f in fields(cls)}
+        str_entries: dict[str, dict[str, str]] = { f: {} for f in hints.keys()}
+        for raw_entry in text.splitlines():
+            if raw_entry.startswith('#') or raw_entry.startswith('['):
+                continue
+            field_name, locale, raw_value = cls._partition_entry(raw_entry)
+            if field_name in str_entries:
+                str_entries[field_name][locale] = raw_value
+        for field_name, locale_dict in str_entries.items():
+            hint = hints[field_name]
+            try:
+                if value := cls._coerce_type(hint, locale_dict) is not None:
+                    kwargs[field_name] = value
+            except ValueError:
+                print(f"Invalid value for {field_name}: {locale_dict}")
+                continue
+        return cls(**kwargs)
 
 def cmd_to_json(cmd):
-    """
+    """print
     Execute a shell command and parse its output as JSON.
     
     Args:

@@ -90,6 +90,11 @@ hl.env("HYPRCURSOR_SIZE", "24")
 ---- LOOK AND FEEL ----
 -----------------------
 
+local color_active = "rgba(44475aff)"
+local color_inactive = "rgba(000000ff)"
+local color_active_2   = "rgba(bd93f9ff)"
+local color_inactive_2 = "rgba(6272a4ff)"
+
 -- Refer to https://wiki.hypr.land/Configuring/Basics/Variables/
 hl.config({
     general = {
@@ -100,8 +105,8 @@ hl.config({
 
         -- https://wiki.hypr.land/Configuring/Basics/Variables/#variable-types for info about colors
         col = {
-            active_border   = "rgba(595959ff)",
-            inactive_border = "rgba(000000ff)",
+            active_border   = color_active,
+            inactive_border = color_inactive,
         },
 
         -- Set to true to enable resizing windows by clicking and dragging on borders and gaps
@@ -171,24 +176,6 @@ hl.animation({ leaf = "workspacesIn",  enabled = true,  speed = 1.21, bezier = "
 hl.animation({ leaf = "workspacesOut", enabled = true,  speed = 1.94, bezier = "almostLinear", style = "fade" })
 hl.animation({ leaf = "zoomFactor",    enabled = true,  speed = 7,    bezier = "quick" })
 
--- Ref https://wiki.hypr.land/Configuring/Basics/Workspace-Rules/
--- "Smart gaps" / "No gaps when only"
--- uncomment all if you wish to use that.
--- hl.workspace_rule({ workspace = "w[tv1]", gaps_out = 0, gaps_in = 0 })
--- hl.workspace_rule({ workspace = "f[1]",   gaps_out = 0, gaps_in = 0 })
--- hl.window_rule({
---     name  = "no-gaps-wtv1",
---     match = { float = false, workspace = "w[tv1]" },
---     border_size = 0,
---     rounding    = 0,
--- })
--- hl.window_rule({
---     name  = "no-gaps-f1",
---     match = { float = false, workspace = "f[1]" },
---     border_size = 0,
---     rounding    = 0,
--- })
-
 -- See https://wiki.hypr.land/Configuring/Layouts/Dwindle-Layout/ for more
 hl.config({
     dwindle = {
@@ -216,25 +203,22 @@ hl.config({
     group = {
         -- Window border colors while grouped
         col = {
-            border_active          = "rgba(bd93f9ff)", -- purple
-            border_inactive        = "rgba(44475aff)", -- current line
-            border_locked_active   = "rgba(ff79c6ff)", -- pink
-            border_locked_inactive = "rgba(6272a4ff)", -- comment
+            border_active = color_active,
+            border_inactive = color_inactive,
+            border_locked_active   = color_active_2,
+            border_locked_inactive = color_inactive_2,
         },
 
         groupbar = {
             enabled        = true,
-            font_size      = 10,
-            gradients      = true,
-            height         = 14,
-            text_color     = "rgba(f8f8f2ff)", -- foreground
-
-            -- Tab colors
+            font_size      = 16,
+            indicator_gap  = 4,
+            text_color     = "rgba(f8f8f2ff)",
             col = {
-                active          = "rgba(bd93f9ff)", -- purple
-                inactive        = "rgba(282a36ff)", -- background
-                locked_active   = "rgba(ff79c6ff)", -- pink
-                locked_inactive = "rgba(6272a4ff)", -- comment
+                active = color_active,
+                inactive = color_inactive,
+                locked_active   = color_active_2,
+                locked_inactive = color_inactive_2,
             },
         },
     },
@@ -253,6 +237,7 @@ hl.config({
         initial_workspace_tracking = 2,
         enable_swallow             = true,
         swallow_regex              = "^(kitty)$",
+        font_family                = "ComicCode Nerd Font"
     },
 })
 
@@ -393,7 +378,7 @@ local suppressMaximizeRule = hl.window_rule({
 })
 -- suppressMaximizeRule:set_enabled(false)
 
-hl.window_rule({
+local wr = hl.window_rule({
     -- Fix some dragging issues with XWayland
     name  = "fix-xwayland-drags",
     match = {
@@ -632,5 +617,4 @@ hl.window_rule({
     float = false,
     tile  = true,
 })
-
 

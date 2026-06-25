@@ -4,24 +4,6 @@ local cmd = vim.cmd
 local nvim_set_hl = vim.api.nvim_set_hl
 local tbl_deep_extend = vim.tbl_deep_extend
 
----@class MyThemeConfig
----@field italic_comment? boolean
----@field transparent_bg? boolean
----@field show_end_of_buffer? boolean
----@field lualine_bg_color? string?
----@field colors? Palette
----@field theme? string?
----@field overrides? HighlightGroups | fun(colors: Palette): HighlightGroups
-local DEFAULT_CONFIG = {
-   italic_comment = false,
-   transparent_bg = false,
-   show_end_of_buffer = false,
-   lualine_bg_color = nil,
-   colors = PALETTE,
-   overrides = {},
-   theme = 'my-theme'
-}
-
 local PALETTE = {
    bg = "#000000",
    fg = "#F8F8F2",
@@ -47,6 +29,24 @@ local PALETTE = {
    nontext = "#3B4048",
    white = "#ABB2BF",
    black = "#191A21",
+}
+
+---@class MyThemeConfig
+---@field italic_comment? boolean
+---@field transparent_bg? boolean
+---@field show_end_of_buffer? boolean
+---@field lualine_bg_color? string?
+---@field colors? Palette
+---@field theme? string?
+---@field overrides? HighlightGroups | fun(colors: Palette): HighlightGroups
+local DEFAULT_CONFIG = {
+   italic_comment = false,
+   transparent_bg = false,
+   show_end_of_buffer = false,
+   lualine_bg_color = nil,
+   colors = PALETTE,
+   overrides = {},
+   theme = 'my-theme'
 }
 
 local TRANSPARENTS = {

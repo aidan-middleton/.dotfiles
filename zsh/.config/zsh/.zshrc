@@ -76,6 +76,10 @@ alias vcreate="python -m venv venv"
 alias vactivate='source venv/bin/activate'
 alias superclear="printf '\033[2J\033[3J\033[1;1H'"
 
+hgrep() {
+    grep "$1" "$HISTFILE" 
+}
+
 # Delete WirePlumber state and restart service
 restart_wireplumber() {
     local state_dir="$HOME/.local/state/wireplumber"

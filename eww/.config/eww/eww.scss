@@ -93,4 +93,9 @@ $ws-inactive-6: $dark_cyan;
     &.ws5 { color: $ws-inactive-5; }
     &.ws6 { color: $ws-inactive-6; }
   }
+
+}
+
+.urgent-icon, .bell-icon {
+  margin-right: 2px;
 }

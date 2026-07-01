@@ -300,6 +300,14 @@ def print_workspaces():
     print(json.dumps(sorted_workspaces), flush=True)
 
 
+def set_current_workspace(workspace_id: int):
+    global current_workspace
+    current_workspace = workspace_id
+    if workspace_id in workspaces:
+        workspaces[workspace_id]["isUrgent"] = False
+        workspaces[workspace_id]["isBell"] = False
+
+
 for workspace in (GET_WORKSPACES.execute_to_dict() or defaultdict(dict)):
     id = workspace["id"]
     workspaces[id] = {}
@@ -308,6 +316,8 @@ for workspace in (GET_WORKSPACES.execute_to_dict() or defaultdict(dict)):
     workspaces[id]["monitor"] = workspace["monitor"]
     workspaces[id]["monitorID"] = workspace["monitorID"]
     workspaces[id]["isActive"] = False
+    workspaces[id]["isUrgent"] = False
+    workspaces[id]["isBell"] = False
     workspaces[id]["clients"] = []
 
 for client in (GET_CLIENTS.execute_to_dict() or defaultdict(dict)):
@@ -343,7 +353,8 @@ with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as client:
                 case "focusedmonv2":
                     current_monitor_name = arguments[1]
                     current_monitor_id = int(monitors[arguments[1]])
-                    current_workspace = int(arguments[2])
+                    set_current_workspace(int(arguments[2]))
+                    print_workspaces()
                 case "destroyworkspacev2":
                     destroyed_id = int(arguments[1])
                     workspaces.pop(destroyed_id)
@@ -352,7 +363,7 @@ with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as client:
                     print_workspaces()
                 case "workspacev2":
                     old_workspace = int(current_workspace)
-                    current_workspace = int(arguments[1])
+                    set_current_workspace(int(arguments[1]))
                     if workspaces.get(old_workspace) != None:
                         workspaces[old_workspace]['isActive'] = False
                     workspaces[current_workspace]['isActive'] = True
@@ -365,6 +376,8 @@ with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as client:
                     workspaces[id]["monitor"] = current_monitor_name
                     workspaces[id]["monitorID"] = current_monitor_id
                     workspaces[id]["isActive"] = False
+                    workspaces[id]["isUrgent"] = False
+                    workspaces[id]["isBell"] = False
                     workspaces[id]["clients"] = []
                     print_workspaces()
                 case "activespecialv2":
@@ -377,6 +390,8 @@ with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as client:
                         workspaces[id]["monitor"] = monitor
                         workspaces[id]["monitorID"] = monitor_id
                         workspaces[id]["isActive"] = True
+                        workspaces[id]["isUrgent"] = False
+                        workspaces[id]["isBell"] = False
                         workspaces[id]["clients"] = []
                         special[monitor_id] = id
                     else:
@@ -412,3 +427,19 @@ with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as client:
                         clients[address]["workspace"] = id
                         workspaces[id]["clients"].append(icon)
                         print_workspaces()
+                case "urgent":
+                    address = arguments[1]
+                    client = clients.get(address)
+                    if client is not None and client["workspace"] in workspaces:
+                        workspace_id = client["workspace"]
+                        if workspace_id != current_workspace:
+                            workspaces[workspace_id]["isUrgent"] = True
+                            print_workspaces()
+                case "bell":
+                    address = arguments[1] if len(arguments) > 1 else ""
+                    client = clients.get(address)
+                    if client is not None and client["workspace"] in workspaces:
+                        workspace_id = client["workspace"]
+                        if workspace_id != current_workspace:
+                            workspaces[workspace_id]["isBell"] = True
+                            print_workspaces()

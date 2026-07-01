@@ -19,12 +19,14 @@
             :onchange "")
     time))
 
-(defwidget workspace [id name monitor active clients] 
+(defwidget workspace [id name monitor active urgent bell clients]
   (button :class { "workspace" + " " + (active ? "active" : "inactive") + " " + "ws" + monitor }
           :onclick { "hyprctl dispatch 'hl.dsp.focus({ workspace = " + id + " })'"}
-    (box :orientation "h" 
-         :space-evenly false 
+    (box :orientation "h"
+         :space-evenly false
          :spacing 5
+      (label :class "urgent-icon" :visible urgent :text "")
+      (label :class "bell-icon" :visible bell :text "")
       (label :text name)
       (box :orientation "h" 
            :space-evenly false 
@@ -46,7 +48,7 @@
        :halign "start"
        :spacing 10
     (for workspace in workspaces
-      (workspace :id {workspace.id} :name {workspace.name} :monitor {workspace.monitorID} :active {workspace.isActive} :clients {workspace.clients}))))
+      (workspace :id {workspace.id} :name {workspace.name} :monitor {workspace.monitorID} :active {workspace.isActive} :urgent {workspace.isUrgent} :bell {workspace.isBell} :clients {workspace.clients}))))
 
 (defwindow menu
     :monitor 1

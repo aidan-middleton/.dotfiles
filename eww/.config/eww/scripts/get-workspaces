@@ -312,7 +312,7 @@ for workspace in (GET_WORKSPACES.execute_to_dict() or defaultdict(dict)):
 
 for client in (GET_CLIENTS.execute_to_dict() or defaultdict(dict)):
     id = client["workspace"]["id"]
-    address = client["addaress"].removeprefix("0x")
+    address = client["address"].removeprefix("0x")
     client_class = client["class"]
     icon = get_icon(client_class)
     workspaces[id]["clients"].append(icon)
@@ -327,7 +327,7 @@ for monitor in (GET_MONITORS.execute_to_dict() or defaultdict(dict)):
     if monitor["specialWorkspace"]["id"] != 0:
         special_id = int(monitor["specialWorkspace"]["id"])
         special[int(monitor["id"])] = special_id
-        workspaces[special_id]["isAvtive"] = True
+        workspaces[special_id]["isActive"] = True
     active_id = int(monitor["activeWorkspace"]["id"])
     workspaces[active_id]["isActive"] = True
 print_workspaces()
@@ -345,7 +345,10 @@ with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as client:
                     current_monitor_id = int(monitors[arguments[1]])
                     current_workspace = int(arguments[2])
                 case "destroyworkspacev2":
-                    workspaces.pop(int(arguments[1]))
+                    destroyed_id = int(arguments[1])
+                    workspaces.pop(destroyed_id)
+                    for address in [a for a, c in clients.items() if c["workspace"] == destroyed_id]:
+                        del clients[address]
                     print_workspaces()
                 case "workspacev2":
                     old_workspace = int(current_workspace)

@@ -1,2 +1,6 @@
 emacs/.config/emacs/history
 emacs/.config/emacs/recentf
+
+**/.idea/
+
+**/__pycache__/

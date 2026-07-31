@@ -325,9 +325,9 @@ for i = 1, 10 do
     hl.bind(mainMod .. " + SHIFT + " .. key, hl.dsp.window.move({ workspace = i }))
 end
 
--- Monitor controls
--- hl.bind(mainMod .. " + SHIFT + H", hl.dsp.workspace.move_to_monitor(0))
--- hl.bind(mainMod .. " + SHIFT + L", hl.dsp.workspace.move_to_monitor(1))
+-- Monitor controlshl
+hl.bind(mainMod .. " + SHIFT + H", hl.dsp.workspace.move({monitor = "HDMI-A-1"}))
+hl.bind(mainMod .. " + SHIFT + L", hl.dsp.workspace.move({monitor = "DP-1"}))
 
 -- Example special workspace (scratchpad)
 -- hl.bind(mainMod .. " + S", hl.dsp.workspace.toggle_special("magic"))
